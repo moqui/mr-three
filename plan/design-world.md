@@ -1,211 +1,123 @@
-# IronStone THREE — World design
+# Millrace · IronStone THREE world atlas
 
-November 17, 2026 — skeleton; nothing designed in detail and nothing built. This file will hold the layout of the
-village, the building and interior for each application, and the functional decorations of every space. The
-[concept](concept.md) is its fixed input and the [technical design](design-technical.md) says how a layout is
-stored and drawn. Sections marked **To design** are for a later effort; the tables show the shape to fill, and rows
-marked *example* are illustrations, not decisions.
+Stand just inside the south gate. Straight ahead, the clock face is a pale disc against a seam of red rock. To the right, a barn sticks one black timber out over the landing like a fishing rod. Beyond it, a wheel dips its paddles into the millrace. A person giving directions has three good sentences already. Meet under the clock. Collect at the hoist. Take repairs to the wheel.
 
-Sections: [1 how to fill this](#1-how-to-fill-this-document) · [2 art direction](#2-art-direction) ·
-[3 village plan](#3-village-plan) · [4 building register](#4-building-register) ·
-[5 interiors](#5-interiors) · [6 functional decorations](#6-functional-decorations) ·
-[7 global decorations](#7-global-decorations) · [8 meeting rooms](#8-meeting-rooms-and-gathering-places) ·
-[9 avatars and villagers](#9-avatars-and-villagers) · [10 navigation aids](#10-navigation-aids) · [11 open](#11-open)
+![Arrival key painting looking north. The counting house is on the left, market arcade on the right, clock ahead, receiving hoist and millwheel upstream to the right.](millrace-arrival.jpg)
 
----
+*Arrival study.* The painting sets the silhouette, warmth and order in which the eye finds things. The overhead plate sets walking distances and door locations. Frame the same composition at the game camera’s default 50-degree pitch, with adjustable zoom. Keep the foreground street clear even when the square is busy.
 
-## 1. How to fill this document
+Millrace is a proposed working town for the BOSS divisions, their PASS counters and the framework apps. This atlas supplies the exterior for T1, three furnished interiors for T3, and the building sheets for the rest. The [concept](concept.md) covers the purpose and the [technical design](design-technical.md) owns rendering, services and deployment. The [building sheets](design-world-buildings.md), [first interiors and review walk](design-world-interiors.md) and [Assist characters](design-world-agents.md) are parts of this atlas.
 
-- **One space at a time.** A space is the village exterior or one building's interior. Each gets a plan, a list of
-  places (doors, bays, rooms) and a functional decoration table ([§6](#6-functional-decorations)).
-- **Start from the app's menu and Home.** An interior's bays are the app's top-level sections; its first decorations
-  are the counters and work lists the app's Home already shows. Nothing in the world needs data the app does not
-  already produce, unless this file says so and the technical design lists it as a need.
-- **Decide, with a source.** Each decoration names the screen it opens and the service or dashboard panel its state
-  comes from, checked against the apps as the BOSS designs check names against Mantle.
-- **Every decoration earns its place.** For each one, say what it gives access to or what state it shows. A prop
-  that does neither is filler: allowed where a space would otherwise look empty, and never where people walk.
-- **Split when it grows.** When this file gets long, a building moves to `design-world-<app>.md` and its row in the
-  register links to it.
+## 1. Town plan
+
+![Numbered site plan with a north arrow, street doors, scale and the two business routes. Building names and accessible routes follow below.](millrace-plan.svg)
+
+The dome spans about 180 m. The settled ground occupies roughly 130 × 110 m on the technical design's metre grid. North is up. The ironstone ridge closes the north skyline. The water enters from the northeast, drops at the mill, slows at the receiving landing and leaves to the southeast. Keep all everyday destinations on the near bank. Ridge and river are scenery with low coping stones at the water. A gentle rise toward the clock gives the square a head and a foot. All main streets have a continuous level or ramped line.
+
+Read the plan from the south. The gate opens onto Market Street. The covered market sits to the east, the counting house to the west. Straight on is the square with the clock house at its northern end. Turn east there for the landing and follow the water upstream to the mill yard. The western cross street leads past the post loft to the proof yard, then into the works. The Forum steps open off the gate road. The lower, paved side of each stepped gathering place has seats and room for another person alongside.
+
+| Walk from threshold to threshold | Approximate distance along the drawn streets | What guides the last turn |
+| --- | ---: | --- |
+| Gate to square centre | 37 m | Clock face stays ahead |
+| Square to Billing | 18 m | Black shutters and brass coin above the west counter |
+| Square to Warehouse | 51 m | Empty hoist on the skyline, staff door on the landward side |
+| Square to Smithy | 42 m | Post loft, then the double chimney on Proof Lane |
+| Receiving barn to mill | 76 m | Turn inland at the barn, then north beside the scales to the wheel |
+| Square to market meeting porch | 31 m | Two facing benches at the market arcade |
+
+Allow 4 m for cart streets, 3 m for side lanes and at least 2 m clear past a sign or bench. Give a portal a level landing on both sides, with benches and interaction points recessed from the line of travel. Keep roofs below the sightlines from the gate to clock, hoist and wheel. Use the close and district zoom settings to check the three gaps. Interior roofs are omitted and near walls are low in the [camera design](design-technical.md#12-movement-camera-and-physics). A discoverable feature never depends on seeing over another building.
+
+**Two trades share one street.** Follow the broken ochre line from Sales at the bargain hall through the square to Warehouse for picking and shipping, then back to Accounting for invoice and receipt. Shop at the market is the storefront branch. Help and returns come back through the mending porch. The green dotted route starts at Purchasing, crosses its own Supplier counter for acknowledgement, then runs down to Receiving and Putaway. The bill comes in at the factors' counter and matching and payment belong to the counting house. Brass pavement inlays bear a folded order or a tied bale so the routes still differ in grayscale. Names, all intermediate steps and authorized record links live on the actual Insights maps. The inlays teach a route and execute no work. [Customer flow](../../mr-boss/report/insights-flowmap-customer.json) · [Supplier flow](../../mr-boss/report/insights-flowmap-supplier.json) · [Internal flow](../../mr-boss/report/insights-flowmap-internal.json)
 
 ## 2. Art direction
 
-**To design.** The rules it must keep are in [concept §4](concept.md#4-design-principles): soft angles, comical
-style, low stress; beautiful but simple; low poly; few textures.
-
-| Topic | To decide |
+| Element | Direction for the artist |
 | --- | --- |
-| Palette | One palette for the whole world, with an accent per district or app; how status colors (late, blocked, done) stay readable against it and for color-blind users |
-| Shapes | Proportions of buildings, props and people; how much exaggeration |
-| Lettering | Sign and banner fonts; a readable minimum size at the usual camera height |
-| Screen frames | The border that marks a real 2D screen: one per origin (book, sign, door), or one for all |
-| Animation | The idle life of a space; the slapstick tone for work (carrying, stacking, dropping) and its limits |
-| Light | Time of day, shadows and the dome's sky |
-| Sound | Ambient sound and effects, and the off switch |
+| Stone, wood and cloth | Ironstone **#AB694C**, limewash **#F4E8CE**, sawn oak **#987047**, river green **#587E70**, writing ink **#243734**. Use ochre roofs on the market, slate-blue ridges on the works and bare timber ends in the mill yard. Repeat the same cornerstone and door hardware across town. |
+| Silhouette and scale | People about 1.7 m tall, with large hands, broad cuffs and simple faces. A street door is 2.4 m high. Most eaves sit at 3–4 m. Clock tip 14 m, hoist tip 8 m, wheel 5 m across. Exaggerate the tool by which a building earns its living. Let changing roof shapes do the work of extra textures. |
+| Lettering | Paint the trade emblem large enough to read from across the square. At approach show the exact localized app name on a level, screen-facing label in the shell typeface, at least 16 CSS px, ink on opaque limewash. Draw the same label on focus. Keep the full name in the directory when a distant sign folds to an emblem. |
+| Books, signs and doors | A pair of brass corners and an ink rule frame every flat working screen. The frame carries the app title, the return place and a labeled Close control. A projecting book spine means open a screen. A pin or dial means read a value. A scalloped speech mark identifies an Assist character. Use the same marks beside directory entries. |
+| Light and sky | Late-morning light from the southwest leaves door faces legible. Cloud bands painted inside the dome drift only on higher tiers. The clock may show local time with the zone in its label. Weather has no business meaning. |
+| Movement and sound | Let the millwheel turn for pleasure and the pigeon on the counting-house roof change feet. A selected book squares itself against its shelf with one soft tap. Keep motion local and brief. Reduced motion uses the settled pose, labeled focus and immediate travel. Water, timber creak and paper are optional ambience. All speech and effects have a silent route. |
 
-The base art is CC0 low-poly packs recolored to this palette, with code-built pieces for the functional decorations
-([design-technical §15](design-technical.md#15-assets)). Choosing the packs is part of this section.
+The Titchfield hall's open ground arcade is why our market has room to talk while the road stays clear. The Lurgashall wheel drove several jobs including a sack hoist. Here the wheel identifies making and the separate waterside jib identifies receiving. Waterside warehouses placed loading directly against the boat. Give the barn its projecting tackle on that face and its pedestrian entrance on the other. [Titchfield Market Hall](https://www.wealddown.co.uk/buildings/market-hall-from-titchfield/) · [Lurgashall Watermill](https://www.wealddown.co.uk/buildings/watermill-from-lurgashall/) · [Canal & River Trust warehouse study](https://canalrivertrust.org.uk/media/document/OxyVe7XLOA0NPhVmzYkFRA/yiOhK5j3PwcxZwUiOezx2Pbc7CbqNR6xhMgVN5T7A78/aHR0cHM6Ly9jcnRwcm9kY21zdWtzMDEuYmxvYi5jb3JlLndpbmRvd3MubmV0L2RvY3VtZW50Lw/018f9b65-60c8-76bf-9933-adfa3fecba67.pdf)
 
-## 3. Village plan
+Take three gestures from the games. *Job Simulator* puts the thing you want to use within reach. Tip the nearest ledger toward the hand or focus ring. *Carry On Together* makes awkward loads funny. Let one corner of the sling catch, bob once, and settle on selection without altering a receipt. *Human Resource Machine* gives successive operations fixed places. Keep issue, changes and checks in the same order along the proof bench. The skyline uses the same principle at a distance, with each landmark occupying its own gap. [Owlchemy Labs](https://jobsimulatorgame.com/) · [Carry On Together](https://store.steampowered.com/app/4776500/Carry_On_Together/) · [Tomorrow Corporation](https://tomorrowcorporation.com/humanresourcemachine)
 
-**To design.** A plan drawing goes here.
+### Kit selection
 
-- **The dome:** its size, what is painted on it, and where the events screen is.
-- **Terrain:** the small rises and dips, water if any, and paths that keep walking distances short.
-- **The large feature:** what it is (a hill, a cliff, a great tree, a castle rock), on which side, and which global
-  decorations it carries ([§7](#7-global-decorations)).
-- **The square:** where people arrive, with the signposts, the notice board and the general meeting rooms.
-- **Districts:** buildings grouped as the BOSS launcher groups its apps, so the village reads as the business does.
+The following files and the included CC0 license texts were checked at the linked creator revisions. Counts are indexed triangles in the source meshes, before instance reuse or conversion. Each sampled asset uses one material.
 
-| District | Apps | Character |
+| Kit and selected files | Treatment | Source and license |
 | --- | --- | --- |
-| Workspace (the square) | Commons, Comms | To design |
-| Customer-facing | Sales, Marketing, Customer Service, Commerce | To design |
-| Supply and operations | Products, Purchasing, Warehouse, Manufacturing, Maintenance | To design |
-| Finance, people and projects | Accounting, People, Projects | To design |
-| Management | Insights, Admin | To design |
-| The gate | PASS Account, Members and Sites; PASS Forum on or near the square | To design: where an external visitor arrives and where the community gathers |
-| The works | System, Tools, Dashboards, Dev AIDE | To design; how much of these fits is open in [concept §11](concept.md#11-open) |
+| KayKit Medieval Hexagon 1.0, blue watermill (1,921), market (3,125), blacksmith (2,410) | Separate the structures from their tile footprints. Snap entrances to the square metre grid. Recolor one variant. Add the clock face, hoist and proof-yard chimney as distinct pieces. | [Buildings](https://github.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0/tree/84fa4e91af6a88989be7c99e0891cede11f2ca38/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue) · [license](https://github.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0/blob/84fa4e91af6a88989be7c99e0891cede11f2ca38/LICENSE.txt) |
+| KayKit Furniture Bits 1.0, book_single (68), chair_stool_wood (216), table_medium (168) | Enlarge the spine slightly and reuse it for working books. Build the adjustable sling, folding ledger, proof tags and state marks from simple geometry. | [Furniture](https://github.com/KayKit-Game-Assets/KayKit-Furniture-Bits-1.0/tree/96d5930a8dbdb363409bbc2d3341718b00e17c9c/addons/kaykit_furniture_bits/Assets/gltf) · [license](https://github.com/KayKit-Game-Assets/KayKit-Furniture-Bits-1.0/blob/96d5930a8dbdb363409bbc2d3341718b00e17c9c/LICENSE.txt) |
+| KayKit Adventurers 1.0, Rogue.glb (6,377), skinned and animated | Use the Rig as the first proportion and retargeting sample. Give the civilian figure an apron or plain coat. Keep locomotion and social clips, with a simplified distant figure. | [Character](https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0/blob/672074b73ba276876a19e8816ecdc5241817ab47/addons/kaykit_character_pack_adventures/Characters/gltf/Rogue.glb) · [license](https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0/blob/672074b73ba276876a19e8816ecdc5241817ab47/LICENSE.txt) |
 
-Insights' business flow map already draws how the apps connect. The roads between buildings should follow it where
-they can (order to cash, procure to pay), so that walking the village teaches the flow.
+These are art selections. T1 measures the converted exterior against the existing targets of 5 MB transferred, 150 draw calls, 300,000 visible triangles, 64 MB GPU memory and 30 fps on the target phone. Each interior adds at most 2 MB of transfer as a target. Instance the repeated fittings and prioritize readable silhouettes over roof trim. The arrival painting is a concept illustration for this document. [Rendering budgets](design-technical.md#5-rendering-core) · [Asset pipeline](design-technical.md#15-assets)
 
-## 4. Building register
+## 3. Buildings and thresholds
 
-One row per division. **Building** is filled only where the concept names one; the rest is to design. **Back
-office** is the BOSS or framework app behind the privacy glass, as a path under `/qapps`. **Front office** is what
-PASS offers the public for that division, as its PASS path; the pairings are proposed from what each PASS app does
-and are confirmed when the building is designed. A building with no front office has a locked front door.
+The [building register](design-world-buildings.md) uses the numbers on the plan. Its bays use the current app menus and its objects cite the screens that supply them. Each building has a way out at the arrival anchor. A lantern bracket on its **street side** marks a separate meeting-room door, including on buildings whose staff door is locked. An organization binding shows its banner only to members. Public-only places at the gate and Forum use the same street bracket.
 
-| Division | Building | District | Back office | Front office (PASS) | Front meeting room |
-| --- | --- | --- | --- | --- | --- |
-| Commons | To design | Workspace | `Commons` | None proposed | |
-| Comms | To design | Workspace | `Comms` | None proposed | |
-| Sales | To design | Customer-facing | `Sales` | Sales: a customer's quotes and orders, `/sales` | |
-| Marketing | To design | Customer-facing | `Marketing` | Marketing: subscriptions, forms, landing pages, event registration, `/marketing` | |
-| Customer Service | To design | Customer-facing | `CustomerService` | Support: cases, returns, articles, feedback, `/support` | |
-| Commerce | To design | Customer-facing | `Commerce` | Shop: the storefront, `/shop` | |
-| Products | To design | Supply and operations | `Products` | None proposed | |
-| Purchasing | To design | Supply and operations | `Purchasing` | Supplier: quote responses, order acknowledgements, bill upload, `/supplier` | |
-| Warehouse | To design | Supply and operations | `Warehouse` | None | |
-| Manufacturing | The factory | Supply and operations | `Manufacturing` | None | |
-| Maintenance | The maintenance shed | Supply and operations | `Maintenance` | None | |
-| Accounting | The accounting office, with old-style accounting decoration | Finance, people and projects | `Accounting` | Billing: a customer's invoices and payment, `/billing` | |
-| People | To design | Finance, people and projects | `People` | None proposed | |
-| Projects | To design | Finance, people and projects | `Projects` | Smithy: public repositories, issues and merge requests, `/code` (the name suggests a smithy) | |
-| Insights | To design | Management | `Insights` | None | |
-| Admin | To design | Management | `Admin` | None | |
-| Community | To design | The gate | None | Forum, `/forum` | |
-| Arrivals | To design; possibly a gatehouse | The gate | None | Account, Members and Sites, `/account`, `/members`, `/sites` | |
-| System | To design | The works | `system` | None | |
-| Tools | To design | The works | `tools` | None | |
-| Dashboards | To design | The works | `dashboards` | None | |
-| Dev AIDE | To design | The works | `dev` | None | |
+Use one village per installation, with one configured PASS site for its counters. Organization banners, room membership and app readings follow the viewer’s active scope. The village grant admits someone to the street and offered front counters. The counter opens the configured site's PASS mount. Accounts, invitations, publication and repository policy decide what the person can read there. The back door uses the staff app grant. Interior doors use the section's actual authorization and menu condition. A hidden area becomes plain wall. For a private-only app the street threshold is the lock. Omit a PASS counter when the selected site lacks its mount. A paired building then uses its staff entrance. A building entirely supplied by an absent component becomes garden or ordinary frontage, and its directory entry disappears.
 
-IronStone HOME is a plan only; its apps join the register when they exist.
+Fit the paired house in a 32 × 24 m rectangle. Give the front strip 7 m, with counter on the left, staff portal in the middle, meeting door on the right. A tinted, stippled pane beside the portal lets staff see out. Seen from the public side, it can show anonymous moving figures once T4 exists and unchanging outlines of furniture. No workload-driven movement, colored status, names, work sounds or working screens cross it. An opaque installation setting replaces the whole pane. T3 looks like a furnished room at rest. The private-only house has an open central floor and bays on three walls. The register gives their order clockwise from the entrance, grouped on shared furniture where appropriate. Make room for the Settings cupboard by the exit wherever the app offers Settings.
 
-## 5. Interiors
+Shared floor key for the smaller building sheets. A numbered wall shelf is the next group of menu books in a sheet’s clockwise list. Move the furniture to match the trade, keeping the central aisle and arrival sightline clear.
 
-**To design, one per building.** Every interior follows one template so they are quick to learn and to build:
+```text
+      PAIRED HOUSE                        STAFF HOUSE
+┌──────────────────────────┐       ┌──────────────────────────┐
+│ shelf 2       secured bay│       │ shelf 2       secured bay│
+│ shelf 1   Home    shelf 3│       │ shelf 1   Home    shelf 3│
+│ Settings       staff door│       │ Settings       staff door│
+├── privacy pane ─────╥────┤       └───────────────────╥──────┘
+│ counter        meet door │                       staff IN
+└────────╥────────────╥────┘                 separate street door → room
+      public IN      room
+```
 
-- **The front office**, where the division has one: the first room inside the door, open to everyone in the
-  world. It holds the division's public functions as counters, desks and books. No sound passes to or from the back
-  office, so a visitor who wants a person rings for one: staff step through to the front, or a meeting is started
-  on purpose (to design). Its decorations show only what the person looking may see of their own business with the
-  division (their invoices, their cases), never the division's totals.
-- **The privacy glass** between front and back, as [concept §5](concept.md#5-the-world) describes it: shapes and
-  movement from the front, a clear but visibly tinted view from the back. To design: how big it is, where it sits,
-  and what "things happening" look like through it.
-- **The back office**, the app itself, behind a door that is locked to all but those authorized for the app. It
-  starts with a large open center, where people arrive and can gather, with the app's Home shown as the things in
-  it.
-- **Bays around the walls**, one per top-level section of the app's menu, each with a sign naming the section, a
-  book or desk that opens the section's main screen, and the section's own decorations.
-- **Secured areas** behind doors, for sections that need more than the app's own access. A person without it sees
-  the door locked ([design-technical §9](design-technical.md#9-authorization-and-locked-doors)).
-- **Settings** in one consistent place in every building (a back office, a cupboard), since every app has them.
-- **The way out**, and a door to the building's front meeting room.
+## 4. Public life and navigation
 
-Per interior, fill this table:
+**At the gate.** A visitor chooses Enter Village, lands facing the clock, and sees the street directory on a tilted map table. A brass swallow perched on its edge can explain the signs. The table itself always works. Select by app name, by trade name or by destination such as “My invoices”. Travel places the person at the appropriate accessible anchor. Selecting a screen opens its real page. A persistent Square command and the shell palette work from every street and room. The closest matching authorized bay owns a screen opened through search. Close the overlay to resume at that bay, or at the object that originally opened it. PASS initially opens in its own tab at the selected site. Preserve the village tab and focus on the same object when the person returns. [Shell navigation](design-technical.md#7-the-village-as-a-shell-layer)
 
-| Place | Kind | Section of the app | Opens | Secured by | Decorations |
-| --- | --- | --- | --- | --- | --- |
-| *example:* Cashier's window | front office | PASS Billing | `/billing` | the world grant | the visitor's own unpaid invoices as a small stack |
-| *example:* Counting table | center | Accounting Home | `Accounting/Home` | the app | bank balance chest; overdue receivables stack |
-| *example:* Receivables desk | bay | Receivables | `Accounting/Receivables` | the app | to design |
-| *example:* Period close vault | secured area | Period close | `Accounting/PeriodClose` | the section's own group | to design |
+**Under the arcade.** Two people can stand at the bench and hear each other if they choose to listen and speak. In the first audio phase anyone in the exterior space may receive their voices. The street meeting door leads to a separate chat room with its own call. At a public counter, “Meet here” opens the bound room if the viewer may join. Until a staffed invitation or paging source exists, a little counter bell offers the room or the real support/contact page. It cannot promise that a clerk is coming. Room sign states are Available, In session, Unavailable and Private, using the call's state only for people allowed to read it. The Travellers’ table and Speakers’ room are the two general meeting places. Bind the street brackets at division buildings to the division’s chat rooms, with explicit membership. A six-seat ring suggests an ordinary meeting, a twelve-seat hall a larger one. Represent further authorized participants in the roster. Neither number caps the call.
 
-The example rows only show the shape; the Accounting interior is not designed. Screen paths in a real row are
-checked against the app's screens when the row is written.
+**In a meeting.** Someone joining from the ordinary call screen appears on the same roster, with a little desk plaque in the room where a 3D figure would sit. An empty chair means a place to sit. It makes no claim about other chat-room members. Staff use registered names. An external user chooses “Visitor” or their registered real name for everyone. Bodies, colors and hats are cosmetic. Use text plus a small badge for away, do not disturb, in a call and speaking, as supported by presence/call state. The microphone and listening start independently, both off. Each enclosure has its own audio. [People and sound](design-technical.md#14-audio-and-meetings)
+
+**On the ridge.** The Commons clock has a large readable face and a row of seven ceramic day tiles. Its public face can always indicate the day. Selecting it opens the directory at Commons Calendar, if allowed. Personal events appear only on the viewer's near label or inside the clock house. The square notice board uses explicitly shared dashboard panels or visible Commons items. A small plate gives the title, source and time. In a later event, an authorized operator binds a meeting presentation to the dome. Only the meeting's authorized audience elects to watch or hear it. Everyone else retains the daytime sky. The sky carries no system-health information.
+
+**On a bench or in the terminal.** The text directory has the same named places, objects, six data states, locks, room bindings and Assist actions as the world. It follows app order as an alternative to district order. Search, Tab, Enter and Close cover the entire journey. Navigating to a closed screen restores focus to its launching control. On a phone a real work screen fills the display, with Return to village in reach. A Maps link from the table appears when the framework supplies Maps. The village diagram and direct travel are available at T1.
+
+## 5. The village NPCs
+
+A specialist lives where someone would naturally seek advice. At the gate a brass bird reads fingerposts. At the barn a measuring wheel balances a question in its pan. Counterfoil is a little book tethered to the public cashier's desk with green ribbon. The Smithy's press sets a line of type when someone asks it to read a change. In the survey loft an angled mirror lets a manager turn a number over and see where it came from.
+
+Each is an Assist agent with its own curated **AGENT.md**. The brief, the physical station and the directory entry identify the same specialist. Select **Ask** to address one privately. Motion signals the local interaction with Assist. The ordinary book, door or instrument next to the character still opens its screen directly. See the [cast, instruction files and binding design](design-world-agents.md).
 
 ## 6. Functional decorations
 
-**To design, per space.** The catalog has this shape:
+| State | What the person sees | What the directory reads |
+| --- | --- | --- |
+| Value | Object at a level, with shape and text for its condition | Actual value, unit, scope and as-of time |
+| Zero | Tidy empty cradle, exposed base and small round zero seal | “0 waiting” (or the correctly formatted zero amount) |
+| Missing | No variable insert. A fixed label can still open the underlying screen | “No reading configured” |
+| Withheld | Closed cover on a known, visible fixture | “Restricted”. An absent place or unseen back zone contributes no entry at all |
+| Stale | Last permissible level, striped dust sleeve and small clock | “Last known …”, value and time. Recheck scope before redisplay |
+| Failed | Folded wooden trestle with a wrench shape | “Reading unavailable”. The working screen can still be opened if permitted |
 
-| Decoration | Place | Shows or opens | Source | Who sees it | States |
-| --- | --- | --- | --- | --- | --- |
-| *example:* Receiving crates by the barn door | Warehouse, center | The receiving queue as a pile that grows; opens Warehouse › Receiving | Warehouse Home | Warehouse users | empty, some, many, late (a red tag) |
-| *example:* Approvals bell | Any building with an Approvals section | Rings and swings while approvals wait for this person; opens the approvals list | the shell's approvals count | The person themselves | still, ringing |
-| *example:* Meeting status sign | Beside a meeting room door | Free, in session, how many inside; opens the room | the room's call | People who may join the room | free, in session, withheld |
-| *example:* KPI billboard | The square | A dashboard panel chosen by an administrator; opens the dashboard | a dashboard panel | Whoever the dashboard is shared with | value, no data, withheld |
+Every live object is evaluated as the viewer in the current organization, site, store, facility or repository. Personal work comes first. A common street object that carries private data draws a different insert for each authorized person. The exterior hoist always carries one empty sling. Its twin inside Warehouse can carry a variable load. A permission or organization change clears old readings. Keep inactive readings, partial results and a genuine zero distinct. Use the source's own condition and filtered destination. A stack suggests magnitude and the near label gives the exact value. Each directory listing names both its object and its real destination. [State contract](design-technical.md#10-functional-decorations)
 
-Rules for every row:
+Use two common fittings wherever the source and destination are available.
 
-- **States are distinct.** Zero, missing, withheld (this person may not see it), stale and failed never look the
-  same, as BOSS's dashboard widgets already require; a value shows how old it is.
-- **Public decorations use public data.** A decoration everyone in a space can see shows only what everyone who can
-  enter that space may read. Anything narrower is drawn per person: one sees the full crates, another a closed lid.
-- **Nothing is read through the glass.** From the front office a back-office decoration is a plain shape with no
-  level, color or text, and people are figures without faces or names. What moves may be seen to move.
-- **Personal before aggregate.** "Your approvals", "your open cases" come first, because they are what a person
-  acts on; division totals follow.
-- **It opens something.** Selecting a decoration opens the screen that explains or changes what it shows.
-- **No individual scoreboards.** A decoration does not rank named people, unless a later scoring design says so.
-
-Kinds to draw from: a pile or stack (a queue's length), a gauge or level (a quantity against a limit), a flag or
-banner (a status), a light or bell (something waiting for this person), a clock or calendar (a due time), a sign
-(text and a number), a creature or cart in motion (work in progress), a book or desk (a working screen).
-
-## 7. Global decorations
-
-**To design.**
-
-| Element | To decide |
+| Fitting | Binding and destination |
 | --- | --- |
-| The dome as a screen | Which events use it (an all-hands meeting's video, an announcement); who may put something on it |
-| The large terrain feature | Which global, everyone-may-see states it shows (Commons: shared calendar, announcements, the knowledge base) |
-| Time of day | Whether the sky follows the installation's business hours, the person's own clock, or nothing |
-| Weather | Whether it means anything; if it shows system health, only to those who may see system health |
-| The notice board | Company announcements, events today, links to what is new |
+| Personal approvals bell on the clock-house desk | The shell’s viewer-level approvals count lifts the clapper. A single tap on selection opens the approvals section of Commons/Notifications. Keep an app-specific approvals bell scoped to its own topics. [Shell counts](../../../base/framework/service/org/moqui/ui/ShellServices.xml) · [Approvals list](../../mr-boss/screen/Commons/Notifications.xml) |
+| Room sign beside each meeting door | Bind the room to its chat room and read org.moqui.call.CallServices.get#Call as an eligible member. Show state and participant count only if returned for this viewer. Select the real room/call. T5 can poll until the room-state push exists. [Meeting bindings](design-technical.md#14-audio-and-meetings) |
 
-## 8. Meeting rooms and gathering places
+**Proposed adapter work.** Several Home services preserve a null metric when a child read is unavailable. Warehouse, for example, initializes queue readings to null and fills them after successful facility reads. A null alone cannot distinguish an unseen metric, incomplete setup and a failed read. Carry authorized scope, capability, read outcome and as-of alongside a live insert. Until the adapter can establish a reason, label it “Reading unavailable” and offer the source screen. Never manufacture a zero or retain the previous viewer’s value. [Warehouse source](../../mr-boss/service/ironstone/warehouse/HomeServices.xml)
 
-**To design.** Every enclosed space is its own sound space and its door is passed through, never opened ([concept
-§5](concept.md#5-the-world)). Where the general rooms are; how a room for a particular organization is marked; the
-room at each building's front; how many people a room is drawn for; what its door sign shows; where people simply
-stand and talk.
+## 7. Handoff
 
-## 9. Avatars and villagers
-
-**To design.** How a person's figure is made and how far it can be customized; how name, presence (away, do not
-disturb, in a call) and organization show; how staff and external visitors are told apart, and how "Visitor" and a
-visitor's real name are shown (the only two choices, [concept §7](concept.md#7-people-sound-and-meetings)); how
-someone who joined a meeting from the 2D screen appears to those in the room; whether Assist agents are villagers,
-and where they stand.
-
-## 10. Navigation aids
-
-**To design.** Signposts and a map table (which also opens Maps); fast travel by selecting a building from anywhere;
-how the search palette moves a person to the place of the screen it opened; a way home to the square; and what the
-world shows a first-time visitor.
-
-## 11. Open
-
-| Question | Recommendation |
-| --- | --- |
-| The front office pairings of [§4](#4-building-register) | As proposed there; Smithy with Projects and Forum as its own place by the gate are the two least certain |
-| A building with no front office: a locked front door, or a small lobby with glass | A locked door at first; a lobby where there is something worth glimpsing (the factory floor, the warehouse) |
-| What "things happening" behind the glass may show | People and moving work as plain shapes only; an installation may set the glass opaque |
-| Which PASS site the front offices belong to, where an installation has several | One site chosen by an installation setting at first; a village per site is a later question |
-| Whether interiors are scaled to the app's size | No: one template size with more or fewer bays, so every interior is quick to cross |
-| How much moves on its own (carts, animals, workers) | Only what stands for real work in progress, plus a little idle life near the square |
+T1 takes the street plan, silhouettes, public names, anchors, directory and doors. T3 takes the three furnished [interiors and four checked paper walks](design-world-interiors.md) plus the shared object states. T4 supplies people and veiled figures. T5 supplies actual meeting and ambient audio. External grants and framed PASS pages follow T6. Specialist bodies and their direct screen links can be placed with their room. Conversation is enabled when Assist offers that specialist to this user. Until the village-to-Assist binding is built, a body can be a quiet landmark. These design checks cover documents and sources. Measured performance, reachability in a running world and multi-user behavior belong to their implementation phases.

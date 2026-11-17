@@ -2,7 +2,7 @@
 
 November 17, 2026 — concept draft; nothing built. This states what IronStone THREE (the `mr-three` component) is for
 and what it should feel like.
-The world layout is [design-world.md](design-world.md) (a skeleton for a later pass) and the engineering is
+The world atlas is [design-world.md](design-world.md) and the engineering is
 [design-technical.md](design-technical.md).
 
 Sections: [1 purpose](#1-purpose) · [2 serious 3D](#2-serious-3d-in-the-business-apps) ·
@@ -146,7 +146,7 @@ app: what is simple enough to surface in the world is surfaced there, and the re
   meeting room each have their own sound. Nothing passes a wall, a door or the privacy glass, in either direction.
 - **Private audio in meeting rooms.** The village's meeting rooms are the system's existing meeting rooms on the
   same backplane, so someone who joined from the 2D meeting screen and someone who walked in are in one meeting.
-- **Helpers.** Assist agents already have identities in chat. They could later be villagers one can walk up to.
+- **The speaking furniture.** The village NPCs are specialized Assist agents. A brass swallow gives directions at the gate, a measuring wheel answers receiving questions, an intelligent book helps a customer at Billing, a proof press reads changes, and a survey mirror explains Insights. Each station has a curated `AGENT.md`, an Ask action and a directory equivalent. The conversation uses the viewer’s access and stays private. [The cast](design-world-agents.md)
 
 ## 8. Reference games
 
@@ -174,13 +174,13 @@ generic and familiar.
 
 | Document | Holds |
 | --- | --- |
-| [design-world.md](design-world.md) | The village plan, the building for each app, each interior, and the catalog of functional decorations. A skeleton now; filling it is a design effort of its own |
+| [design-world.md](design-world.md) | The village plan, the building for each app, each interior, and the catalog of functional decorations. Millrace, its illustrated plan, building sheets, first interiors and Assist cast |
 | [design-technical.md](design-technical.md) | Libraries, rendering, how the village sits over the qvt shell, authorization, live state, presence, audio, assets, and what the framework must gain |
 
 Suggested order, detailed in [design-technical §19](design-technical.md#19-phases): the shared foundation; the
 village's exterior for one person, with buildings as doors into the apps; the first inline viewers; interiors and
 functional decorations, with front offices and the privacy glass; other people; meetings, then distance audio;
-external visitors; and after those the dome events, helpers, editing and any scoring.
+external visitors. Specialist bodies can be placed with their rooms, with conversations once their Assist bindings are ready. Dome events, editing and any scoring come later.
 
 ## 11. Open
 

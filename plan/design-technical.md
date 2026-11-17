@@ -259,25 +259,25 @@ A space is one JSON document in `world/`, owned by the component as code is. The
   "kind": "interior",
   "of": "Accounting",
   "kits": ["interior-common", "accounting"],
-  "grid": { "cell": 1.0, "width": 40, "depth": 28 },
+  "grid": { "cell": 1.0, "width": 32, "depth": 24 },
   "pieces": [ { "piece": "desk-large", "at": [12, 0, 6], "turn": 90 } ],
   "zones": [
-    { "id": "front", "kind": "front", "area": [0, 18, 40, 10] },
-    { "id": "back", "kind": "back", "area": [0, 0, 40, 18], "screen": "Accounting",
-      "door": { "at": [20, 0, 18], "turn": 0 }, "glass": [ [4, 18, 12, 18], [26, 18, 34, 18] ] }
+    { "id": "front", "kind": "front", "area": [0, 17, 32, 7] },
+    { "id": "back", "kind": "back", "area": [0, 0, 32, 17], "screen": "Accounting",
+      "door": { "at": [16, 0, 17], "turn": 0 }, "glass": [ [3, 17, 12, 17] ] }
   ],
   "places": [
-    { "id": "cashier", "zone": "front", "kind": "counter", "area": [14, 20, 6, 4], "public": "billing" },
+    { "id": "cashier", "zone": "front", "kind": "counter", "area": [4, 18, 7, 4], "public": "billing" },
     { "id": "receivables", "zone": "back", "kind": "bay", "area": [8, 2, 8, 8], "screen": "Accounting/Receivables" },
-    { "id": "close", "zone": "back", "kind": "secured", "area": [30, 2, 8, 8], "screen": "Accounting/PeriodClose",
-      "door": { "at": [30, 0, 6], "turn": 0 } }
+    { "id": "close", "zone": "back", "kind": "secured", "area": [0, 0, 7, 6], "screen": "Accounting/PeriodClose",
+      "door": { "at": [7, 0, 4], "turn": 0 } }
   ],
-  "anchors": [ { "id": "entry", "at": [20, 0, 26] } ],
+  "anchors": [ { "id": "entry", "at": [16, 0, 23] } ],
   "decorations": [
-    { "id": "overdue", "zone": "back", "kind": "stack", "at": [10, 0, 4], "source": "accounting.summary",
-      "value": "receivablesOverdue", "steps": [1, 5, 20], "screen": "Accounting/Receivables" }
+    { "id": "overdue", "zone": "back", "kind": "ledger", "at": [10, 0, 4], "source": "accounting.summary",
+      "value": "arOverdue", "screen": "Accounting/Receivables/Collections" }
   ],
-  "rooms": [ { "id": "meet", "zone": "front", "area": [2, 20, 6, 6], "room": "accounting-front" } ]
+  "rooms": [ { "id": "meet", "zone": "front", "area": [24, 18, 7, 5], "room": "accounting-front" } ]
 }
 ```
 
@@ -379,9 +379,7 @@ The privacy window is a rule about data first and a material second. What a brow
   drawn in one flat tone at reduced contrast. For a viewer in the back, it is a mostly clear pane with a visible
   tint and pattern, so it reads as a privacy window from both sides. Which look is used follows the viewer's own
   authorization, not where their camera is.
-- **"Things happening"** behind the glass are people and whatever moves on its own in the layout. Whether a
-  moving cart may be seen to move is a choice for [design-world](design-world.md), since motion that follows data
-  is a little of that data. An installation may set the glass opaque.
+- **"Things happening"** behind the glass are veiled people and static furnishings. Data-driven movement is visible only inside its authorized zone. An installation may set the glass opaque.
 - **A back office with no front** has no glass unless its layout gives it a lobby; its front door is the locked
   one.
 
@@ -419,6 +417,7 @@ The privacy window is a rule about data first and a material second. What a brow
 
   These are the states BOSS's dashboard widgets already distinguish
   ([design-crosscut](../../mr-boss/plan/design-crosscut.md)). One failing source does not fail the call.
+- The accounting summary binding projects `summary.arOverdue` and its currency for the selected organization and the Home AR-reader condition. PASS inserts use the same site authority, session and operation as the actual public page. Until that adapter is available the place opens the real page.
 - **State follows the zone.** A source used only by back-zone decorations is not run for someone who is not
   authorized for the app, and nothing is returned for it, not even `withheld`: through the glass there is no
   state to draw ([§9.3](#93-front-office-back-office-and-the-glass)).
@@ -426,7 +425,7 @@ The privacy window is a rule about data first and a material second. What a brow
   status into a flag color, a time into a clock hand. Code-built pieces implement the kinds listed in
   [design-world §6](design-world.md#6-functional-decorations).
 - **Refresh.** On entering a space, then once a minute while in it, and at once when a `shellCounts` push says
-  something changed. Home services are not cheap, so each answer is cached per user and source for the interval.
+  something changed. Home services are not cheap, so each answer is cached for the interval under the viewing user, source and its effective scope (organization, site, facility, store or selected record). Discard an old reading on a scope or permission change.
 - **Signs.** A sign bound in `WorldSign` shows a dashboard panel's value, title and as-of time drawn to a canvas
   texture; selecting it opens the dashboard. A panel the person may not read comes back "Not available" from the
   report service, which is the `withheld` state.
@@ -443,7 +442,7 @@ The privacy window is a rule about data first and a material second. What a brow
 | Open | The real screen | The page window of [§7.2](#72-how-it-sits-in-the-page), framed in the style of what was opened |
 
 - **One mechanism.** Books, signs, desks and doors all end in the page window at a real URL. They differ in the
-  path they open and the frame around it.
+  path they open and the emblem on their shared brass-cornered frame.
 - **Front-office places open PASS pages.** PASS screens are server-rendered pages in the public site's own shell,
   not screens of the `/qapps` client, so they cannot load into the page as a BOSS screen does. The window shows
   them in a frame of the PASS page itself, with the same border. PASS pages refuse framing today
@@ -457,6 +456,10 @@ The privacy window is a rule about data first and a material second. What a brow
   inside stay inside is the screen's behavior; mr-three uses this only with panel-archetype screens made for it.
 - **Not done: DOM in 3D perspective.** Projecting live screens onto surfaces with CSS 3D transforms blurs text,
   breaks focus and input on phones, and makes a working screen worse. A screen in use is always flat and framed.
+
+### 11.1 Specialist stations and Assist
+
+A station is a place with a proposed `agentId` binding and a separate ordinary screen opener. The directory and the world resolve **Ask** through the same authorized place. Reuse Assist’s offered-agent list and new-conversation agent selection. A small shell hook must select an offered specialist and open the drawer with the authorized station context. Each specialist definition points its `instructionsLocation` at its curated `component://mr-three/prompt/<station>/AGENT.md`. Read/navigation tools run as the viewer. Recheck zone and source grants when resuming away from the station. A PASS record needs a site-scoped read adapter or a link into the real page. Local speech poses reflect the viewer’s conversation only. [Cast, bindings and limitations](design-world-agents.md)
 
 ## 12. Movement, camera and physics
 
@@ -530,7 +533,7 @@ Seeing other people needs each browser to send its position and receive the othe
 - **Walking in** joins the call (`org.moqui.call.CallServices.join#Call`, or starts it when nobody is there).
   Starting a room's call today rings every member; a walk-in must not, which needs N4.
 - **Who is inside.** `get#Call` lists participants. Those with a figure in the room are shown where they stand;
-  those who joined from 2D or by phone are shown seated at the table, so nobody in the meeting is invisible.
+  those who joined from 2D or by phone have a seated place marker and a roster entry, so nobody in the meeting is invisible.
 - **The door sign** shows free or in session and how many are inside, to people who may join. Live call state is
   pushed only to participants today, so the sign polls `get#Call` for the rooms in view until N6.
 - **One call per page.** `moqui.call` holds a single call. Entering a meeting room leaves any ambient call, and
@@ -569,8 +572,8 @@ Seeing other people needs each browser to send its position and receive the othe
 ## 15. Assets
 
 - **Sources.** CC0 low-poly packs with a medieval village, interiors, props and rigged figures. Kenney, KayKit and
-  Quaternius publish such packs; which ones, and each pack's license file, are settled in
-  [design-world §2](design-world.md#2-art-direction) and recorded when vendored. No pack is used without a license
+  Quaternius publish such packs; the selected source files and their included licenses are recorded in
+  [the atlas kit selection](design-world.md#kit-selection). Record archive hashes and converted kits when vendored. No pack is used without a license
   text that permits redistribution without conditions.
 - **The pipeline** (`tools/kits.mjs`, Node, development only, in the pattern of the library refresh):
   1. Fetch each pinned pack archive and check its hash. Source archives are not committed.
@@ -664,11 +667,11 @@ for N3, polling for N6, generated racks for N8.
 | T0 Foundation | `component.xml`, the static mount, vendored libraries with manifest and check, `moqui.three` with the shared renderer, `m-three-view` with the `box` preset, a gallery example | A box renders on the example screen; nothing 3D loads on other pages; the manifest spec passes |
 | T1 Village, alone | The kit pipeline with a first exterior kit, layout documents and validation, world mode over the shell, camera and movement, buildings as doors with the manifest, the directory and `tui` twin, quality tiers | A person walks or clicks to a building and its app opens in the window; a locked door stays shut; the budgets of [§5](#5-rendering-core) are measured and recorded |
 | T2 First viewers | Box type, product size, packing preview, generated warehouse racks, each injected with its text twin | Each shows on its host screen in BOSS and reads as text in `tui` |
-| T3 Interiors and decorations | The interior template with zones and the glass, two or three interiors from design-world, the source registry and space state, code-built decorations, signs bound to dashboards, front-office places opening PASS pages (in a new tab until N10) | State changes in the apps show in the world within a minute; every state of [§10](#10-functional-decorations) has a look; a user with only the world grant gets no back-zone state |
+| T3 Interiors and decorations | The interior template with zones and the glass, the receiving barn, counting house and proof yard from the world atlas, the source registry and space state, code-built decorations, signs bound to dashboards, front-office places opening PASS pages (in a new tab until N10) | State changes in the apps show in the world within a minute; every state of [§10](#10-functional-decorations) has a look; a user with only the world grant gets no back-zone state |
 | T4 People | N1, the presence relay with its two audiences, figures and their settings | Two browsers see each other move; from the front office a back-office figure is a veiled shape, and the back zone admits only the authorized |
 | T5 Sound | Meeting rooms on existing calls (N4, N6), then distance audio in its first form, a call per enclosure | A 2D participant and a walk-in hear each other; outdoors, volume follows distance; nothing is heard through the glass |
 | T6 External visitors | The identity rules for external users, N10, the check of what the shell shows them, the deployment notes for hosts | A PASS public account with the grant walks the exterior and a front office, opens its own PASS pages in the window, and learns nothing of another visitor or of a back office |
-| Later | Distance audio in the server (N5); the dome for events; Assist agents as villagers; props with physics; editing in the viewers (N8); the product model viewer and PASS; 3D for Maps; the assembly canvas; a world editor; scoring | Each is its own design |
+| Later | Distance audio in the server (N5); the dome for events; specialist Assist station bindings and definitions over the curated role files ([§11.1](#111-specialist-stations-and-assist)); props with physics; editing in the viewers (N8); the product model viewer and PASS; 3D for Maps; the assembly canvas; a world editor; scoring | Each is its own design |
 
 The world grant exists from T1 and is given only to internal users until T6. T2 depends only on T0 and can run
 beside T1. [design-world](design-world.md) must have the exterior plan before
@@ -707,7 +710,7 @@ T1 ends and the first interiors before T3.
 | Presence between cluster nodes on the `notify` transport | Two snapshots a second across nodes, ten within a node; revisit if a village spans nodes in practice |
 | How external users reach the village | On the installation's main host at first, signing in with their PASS account; a village served at an edge node or under a PASS host is a later design |
 | A PASS page in the window, or in a new tab | In the window, framed, once N10 allows it; a new tab until then and wherever a site's policy forbids framing |
-| Which PASS site the front offices use | One site named by an installation setting ([design-world §11](design-world.md#11-open)) |
+| Which PASS site the front offices use | One site named by an installation setting ([world thresholds](design-world.md#3-buildings-and-thresholds)) |
 | The product viewer on PASS pages | After the BOSS viewer: served by PASS from the site's own assets, core bundle only, with PASS's policy unchanged if possible |
 | Whether world mode restyles the header or replaces it | Restyle only: the header is where the palette, tray, Assist and account live, and replacing it would fork the shell |
 | Order of T1 and T2 | T1 first for the fun of it, T2 beside it when someone wants a break from the village |
