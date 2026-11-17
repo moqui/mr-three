@@ -1,4 +1,4 @@
-# mr-three — World design
+# IronStone THREE — World design
 
 November 17, 2026 — skeleton; nothing designed in detail and nothing built. This file will hold the layout of the
 village, the building and interior for each application, and the functional decorations of every space. The
@@ -64,7 +64,7 @@ The base art is CC0 low-poly packs recolored to this palette, with code-built pi
 | Supply and operations | Products, Purchasing, Warehouse, Manufacturing, Maintenance | To design |
 | Finance, people and projects | Accounting, People, Projects | To design |
 | Management | Insights, Admin | To design |
-| The public quarter | PASS apps | To design; see [§11](#11-open) on who may be there |
+| The gate | PASS Account, Members and Sites; PASS Forum on or near the square | To design: where an external visitor arrives and where the community gathers |
 | The works | System, Tools, Dashboards, Dev AIDE | To design; how much of these fits is open in [concept §11](concept.md#11-open) |
 
 Insights' business flow map already draws how the apps connect. The roads between buildings should follow it where
@@ -72,40 +72,35 @@ they can (order to cash, procure to pay), so that walking the village teaches th
 
 ## 4. Building register
 
-One row per application. **Building** is filled only where the concept names one; the rest is to design. **Door** is
-the screen the building's door opens, as a path under `/qapps` for staff apps and the PASS path for public ones.
+One row per division. **Building** is filled only where the concept names one; the rest is to design. **Back
+office** is the BOSS or framework app behind the privacy glass, as a path under `/qapps`. **Front office** is what
+PASS offers the public for that division, as its PASS path; the pairings are proposed from what each PASS app does
+and are confirmed when the building is designed. A building with no front office has a locked front door.
 
-| App | Building | District | Door | Front meeting room | Interior |
+| Division | Building | District | Back office | Front office (PASS) | Front meeting room |
 | --- | --- | --- | --- | --- | --- |
-| Commons | To design | Workspace | `Commons` | | To design |
-| Comms | To design | Workspace | `Comms` | | To design |
-| Sales | To design | Customer-facing | `Sales` | | To design |
-| Marketing | To design | Customer-facing | `Marketing` | | To design |
-| Customer Service | To design | Customer-facing | `CustomerService` | | To design |
-| Commerce | To design | Customer-facing | `Commerce` | | To design |
-| Products | To design | Supply and operations | `Products` | | To design |
-| Purchasing | To design | Supply and operations | `Purchasing` | | To design |
-| Warehouse | To design | Supply and operations | `Warehouse` | | To design |
-| Manufacturing | The factory | Supply and operations | `Manufacturing` | | To design |
-| Maintenance | The maintenance shed | Supply and operations | `Maintenance` | | To design |
-| Accounting | The accounting office, with old-style accounting decoration | Finance, people and projects | `Accounting` | | To design; an example bay list is in [§5](#5-interiors) |
-| People | To design | Finance, people and projects | `People` | | To design |
-| Projects | To design | Finance, people and projects | `Projects` | | To design |
-| Insights | To design | Management | `Insights` | | To design |
-| Admin | To design | Management | `Admin` | | To design |
-| PASS Forum | To design | Public quarter | `/forum` | | To design |
-| PASS Shop | To design | Public quarter | `/shop` | | To design |
-| PASS Smithy | To design (the name suggests a smithy) | Public quarter | `/code` | | To design |
-| PASS Support | To design | Public quarter | `/support` | | To design |
-| PASS Supplier | To design | Public quarter | `/supplier` | | To design |
-| PASS Billing | To design | Public quarter | `/billing` | | To design |
-| PASS Sales | To design | Public quarter | `/sales` | | To design |
-| PASS Marketing | To design | Public quarter | `/marketing` | | To design |
-| PASS Account, Members, Sites | To design; possibly one gatehouse | Public quarter | `/account`, `/members`, `/sites` | | To design |
-| System | To design | The works | `system` | | To design |
-| Tools | To design | The works | `tools` | | To design |
-| Dashboards | To design | The works | `dashboards` | | To design |
-| Dev AIDE | To design | The works | `dev` | | To design |
+| Commons | To design | Workspace | `Commons` | None proposed | |
+| Comms | To design | Workspace | `Comms` | None proposed | |
+| Sales | To design | Customer-facing | `Sales` | Sales: a customer's quotes and orders, `/sales` | |
+| Marketing | To design | Customer-facing | `Marketing` | Marketing: subscriptions, forms, landing pages, event registration, `/marketing` | |
+| Customer Service | To design | Customer-facing | `CustomerService` | Support: cases, returns, articles, feedback, `/support` | |
+| Commerce | To design | Customer-facing | `Commerce` | Shop: the storefront, `/shop` | |
+| Products | To design | Supply and operations | `Products` | None proposed | |
+| Purchasing | To design | Supply and operations | `Purchasing` | Supplier: quote responses, order acknowledgements, bill upload, `/supplier` | |
+| Warehouse | To design | Supply and operations | `Warehouse` | None | |
+| Manufacturing | The factory | Supply and operations | `Manufacturing` | None | |
+| Maintenance | The maintenance shed | Supply and operations | `Maintenance` | None | |
+| Accounting | The accounting office, with old-style accounting decoration | Finance, people and projects | `Accounting` | Billing: a customer's invoices and payment, `/billing` | |
+| People | To design | Finance, people and projects | `People` | None proposed | |
+| Projects | To design | Finance, people and projects | `Projects` | Smithy: public repositories, issues and merge requests, `/code` (the name suggests a smithy) | |
+| Insights | To design | Management | `Insights` | None | |
+| Admin | To design | Management | `Admin` | None | |
+| Community | To design | The gate | None | Forum, `/forum` | |
+| Arrivals | To design; possibly a gatehouse | The gate | None | Account, Members and Sites, `/account`, `/members`, `/sites` | |
+| System | To design | The works | `system` | None | |
+| Tools | To design | The works | `tools` | None | |
+| Dashboards | To design | The works | `dashboards` | None | |
+| Dev AIDE | To design | The works | `dev` | None | |
 
 IronStone HOME is a plan only; its apps join the register when they exist.
 
@@ -113,7 +108,17 @@ IronStone HOME is a plan only; its apps join the register when they exist.
 
 **To design, one per building.** Every interior follows one template so they are quick to learn and to build:
 
-- **A large open center**, where people arrive and can gather, with the app's Home shown as the things in it.
+- **The front office**, where the division has one: the first room inside the door, open to everyone in the
+  world. It holds the division's public functions as counters, desks and books. No sound passes to or from the back
+  office, so a visitor who wants a person rings for one: staff step through to the front, or a meeting is started
+  on purpose (to design). Its decorations show only what the person looking may see of their own business with the
+  division (their invoices, their cases), never the division's totals.
+- **The privacy glass** between front and back, as [concept §5](concept.md#5-the-world) describes it: shapes and
+  movement from the front, a clear but visibly tinted view from the back. To design: how big it is, where it sits,
+  and what "things happening" look like through it.
+- **The back office**, the app itself, behind a door that is locked to all but those authorized for the app. It
+  starts with a large open center, where people arrive and can gather, with the app's Home shown as the things in
+  it.
 - **Bays around the walls**, one per top-level section of the app's menu, each with a sign naming the section, a
   book or desk that opens the section's main screen, and the section's own decorations.
 - **Secured areas** behind doors, for sections that need more than the app's own access. A person without it sees
@@ -125,6 +130,7 @@ Per interior, fill this table:
 
 | Place | Kind | Section of the app | Opens | Secured by | Decorations |
 | --- | --- | --- | --- | --- | --- |
+| *example:* Cashier's window | front office | PASS Billing | `/billing` | the world grant | the visitor's own unpaid invoices as a small stack |
 | *example:* Counting table | center | Accounting Home | `Accounting/Home` | the app | bank balance chest; overdue receivables stack |
 | *example:* Receivables desk | bay | Receivables | `Accounting/Receivables` | the app | to design |
 | *example:* Period close vault | secured area | Period close | `Accounting/PeriodClose` | the section's own group | to design |
@@ -149,6 +155,8 @@ Rules for every row:
   same, as BOSS's dashboard widgets already require; a value shows how old it is.
 - **Public decorations use public data.** A decoration everyone in a space can see shows only what everyone who can
   enter that space may read. Anything narrower is drawn per person: one sees the full crates, another a closed lid.
+- **Nothing is read through the glass.** From the front office a back-office decoration is a plain shape with no
+  level, color or text, and people are figures without faces or names. What moves may be seen to move.
 - **Personal before aggregate.** "Your approvals", "your open cases" come first, because they are what a person
   acts on; division totals follow.
 - **It opens something.** Selecting a decoration opens the screen that explains or changes what it shows.
@@ -172,14 +180,18 @@ banner (a status), a light or bell (something waiting for this person), a clock 
 
 ## 8. Meeting rooms and gathering places
 
-**To design.** Where the general rooms are; how a room for a particular organization is marked; the room at each
-building's front; how many people a room is drawn for; what its door sign shows; where people simply stand and talk.
+**To design.** Every enclosed space is its own sound space and its door is passed through, never opened ([concept
+§5](concept.md#5-the-world)). Where the general rooms are; how a room for a particular organization is marked; the
+room at each building's front; how many people a room is drawn for; what its door sign shows; where people simply
+stand and talk.
 
 ## 9. Avatars and villagers
 
 **To design.** How a person's figure is made and how far it can be customized; how name, presence (away, do not
-disturb, in a call) and organization show; how someone who joined a meeting from the 2D screen appears to those in
-the room; whether Assist agents are villagers, and where they stand.
+disturb, in a call) and organization show; how staff and external visitors are told apart, and how "Visitor" and a
+visitor's real name are shown (the only two choices, [concept §7](concept.md#7-people-sound-and-meetings)); how
+someone who joined a meeting from the 2D screen appears to those in the room; whether Assist agents are villagers,
+and where they stand.
 
 ## 10. Navigation aids
 
@@ -191,7 +203,9 @@ world shows a first-time visitor.
 
 | Question | Recommendation |
 | --- | --- |
-| Whether PASS's public users enter the public quarter, or it is staff's view of the public side | Staff's view first: the quarter's buildings open the staff screens for the same data (Commerce for Shop, Customer Service for Support); public visitors are a later design with their own rules |
-| One building per app, or shared buildings for small apps | One each for BOSS; group the small PASS account apps; decide while drawing the plan |
+| The front office pairings of [§4](#4-building-register) | As proposed there; Smithy with Projects and Forum as its own place by the gate are the two least certain |
+| A building with no front office: a locked front door, or a small lobby with glass | A locked door at first; a lobby where there is something worth glimpsing (the factory floor, the warehouse) |
+| What "things happening" behind the glass may show | People and moving work as plain shapes only; an installation may set the glass opaque |
+| Which PASS site the front offices belong to, where an installation has several | One site chosen by an installation setting at first; a village per site is a later question |
 | Whether interiors are scaled to the app's size | No: one template size with more or fewer bays, so every interior is quick to cross |
 | How much moves on its own (carts, animals, workers) | Only what stands for real work in progress, plus a little idle life near the square |

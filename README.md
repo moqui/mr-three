@@ -1,7 +1,8 @@
-# mr-three
+# IronStone THREE (mr-three)
 
-3D extensions to mr-moqui, mr-boss and mr-pass using the three.js ecosystem: 3D previews and later editors inside
-the business apps, and a game-like village UI laid over the qvt UI.
+IronStone THREE (Three-d Hosted-Roleplay Enterprise Ensuite): 3D extensions to mr-moqui, mr-boss and mr-pass using
+the three.js ecosystem. 3D previews and later editors inside the business apps, and a game-like village UI laid
+over the qvt UI, where each division is a building with a public front office and a locked back office.
 
 Nothing is built yet. The plans:
 
@@ -9,4 +10,5 @@ Nothing is built yet. The plans:
 - [World design](plan/design-world.md): the village, the building and interior for each app, and the functional
   decorations. A skeleton to fill.
 - [Technical design](plan/design-technical.md): libraries, rendering, the village as a layer of the shell,
-  authorization, live state, presence, audio, assets, what the framework must gain, and the phases.
+  the world grant and authorization, live state, presence, audio, assets, what the framework must gain, and the
+  phases.

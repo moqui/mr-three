@@ -1,7 +1,8 @@
-# mr-three — Technical design
+# IronStone THREE — Technical design
 
-November 17, 2026 — draft; nothing built. The component holds a README and a license. This file decides how
-mr-three is built on MR Moqui as it is today, and lists what the framework and Mantle must gain. The
+November 17, 2026 — draft; nothing built. The `mr-three` component holds its README, license and these plans. This
+file decides how IronStone THREE is built on MR Moqui as it is today, and lists what the framework, Mantle and PASS
+must gain. The
 [concept](concept.md) is its fixed input; the [world design](design-world.md) decides what the spaces contain.
 Names of files, services and entities are checked against the tree unless marked *proposed*; behavior marked
 *unverified* has not been tried.
@@ -27,9 +28,15 @@ Sections: [1 decisions](#1-scope-and-decisions) · [2 foundations](#2-existing-f
   ([§7](#7-the-village-as-a-shell-layer)).
 - **The world is data.** A space is a layout document naming kit pieces, doors, places and decoration bindings.
   The engine draws any layout; [design-world](design-world.md) decides the layouts ([§8](#8-world-data)).
+- **Entering the world takes its own grant**, given by an administrator in System, for internal and external
+  users alike. It opens the exterior and the front offices and no app ([§9](#9-authorization-and-locked-doors)).
+- **Front office, privacy glass, back office.** A building's front office holds the division's PASS functions and
+  is open to everyone in the world; its back office is the BOSS app, behind a locked door and a privacy window
+  that the server enforces, not only the renderer ([§9.3](#93-front-office-back-office-and-the-glass)).
 - **Authorization is the apps' own.** A door's lock is the answer of the same check the screen itself would make,
-  and live state is fetched as the person looking at it ([§9](#9-authorization-and-locked-doors),
-  [§10](#10-functional-decorations)).
+  and live state is fetched as the person looking at it ([§10](#10-functional-decorations)).
+- **The framework stays light.** It gains small, mostly reusable pieces ([§18](#18-framework-and-data-needs)); the
+  JavaScript libraries, the art, the engine and anything else bulky live in mr-three.
 - **Meetings are the existing calls.** A village meeting room is a chat room with its call, so 2D and 3D
   participants share one meeting. Distance audio is built on the same media server ([§14](#14-audio-and-meetings)).
 - **Art is CC0 glTF packs** recolored to one palette, plus code-built functional decorations ([§15](#15-assets)).
@@ -66,13 +73,13 @@ What is there to build on, and what each lacks for this use. Paths are from the 
 | --- | --- |
 | `component.xml` | Depends on `mr-boss` (and through it Mantle). PASS is optional: its extensions load only when `mr-pass` is present |
 | `MoquiConf.xml` | Mounts `threestatic` under the root screen (anonymous view, as `devstatic`) and the `village` app under the apps screen with its own launcher entry |
-| `screen/village.xml`, `village.qvue`, `village.tui.json` | The village's app root: entry, the text directory, settings. Its artifact group decides who may use the village at all |
+| `screen/village.xml`, `village.qvue`, `village.tui.json` | The village's app root, shown in the launcher as IronStone THREE: entry, the text directory, settings. Its artifact group is the world grant |
 | `screen/village/` | Settings, the administrator's screens for signs and rooms, and the transitions the world calls |
 | `screen/threestatic.xml`, `screen/threestatic/` | Static files: `libs/` (vendored libraries), `kits/` (processed `.glb` kits), `js/` (mr-three's own modules), `css/` |
 | `screen-extend/` | The inline viewers injected into BOSS and framework screens; the AppList `uiModes` entry |
-| `service/three/` | Services: doors, space state, signs, rooms; the source registry |
+| `service/ironstone/three/` | Services: doors, space state, signs, rooms; the source registry |
 | `world/` | Space layout documents and the kit piece index ([§8](#8-world-data)) |
-| `entity/`, `data/` | The few entities of [§8.3](#83-installation-state); security data, theme resource rows, seeded rooms |
+| `entity/`, `data/` | The few entities of [§8.3](#83-installation-state); security data (the world grant's groups), theme resource rows, seeded rooms |
 | `src/`, `Cargo.toml` | The presence relay, when the framework offers a socket to register ([§13](#13-presence)) |
 | `tools/` | Development scripts that run on Node, not at build or test time: `refresh.mjs` for libraries, `kits.mjs` for art |
 | `test/`, `test/client/`, `test/acceptance/` | Specs ([§17](#17-testing)) |
@@ -219,8 +226,9 @@ need a second implementation. So the world sits behind the shell, and the shell 
 
 ### 7.3 The village screen and the directory
 
-`/qapps/village` is an ordinary app root. Its artifact group (`THREE_VILLAGE`, *proposed*) decides who may use the
-village; an installation that wants only the inline viewers grants it to nobody.
+`/qapps/village` is an ordinary app root, titled IronStone THREE. Its artifact group is the world grant of
+[§9.1](#91-the-world-grant): without it a person has no launcher tile, no entry point and no world. The inline
+viewers do not depend on it.
 
 - **In `qvt`** its `.qvue` starts world mode and shows nothing itself; where WebGL is missing it shows the
   directory.
@@ -253,23 +261,36 @@ A space is one JSON document in `world/`, owned by the component as code is. The
   "kits": ["interior-common", "accounting"],
   "grid": { "cell": 1.0, "width": 40, "depth": 28 },
   "pieces": [ { "piece": "desk-large", "at": [12, 0, 6], "turn": 90 } ],
+  "zones": [
+    { "id": "front", "kind": "front", "area": [0, 18, 40, 10] },
+    { "id": "back", "kind": "back", "area": [0, 0, 40, 18], "screen": "Accounting",
+      "door": { "at": [20, 0, 18], "turn": 0 }, "glass": [ [4, 18, 12, 18], [26, 18, 34, 18] ] }
+  ],
   "places": [
-    { "id": "receivables", "kind": "bay", "area": [8, 2, 8, 8], "screen": "Accounting/Receivables" },
-    { "id": "close", "kind": "secured", "area": [30, 2, 8, 8], "screen": "Accounting/PeriodClose",
+    { "id": "cashier", "zone": "front", "kind": "counter", "area": [14, 20, 6, 4], "public": "billing" },
+    { "id": "receivables", "zone": "back", "kind": "bay", "area": [8, 2, 8, 8], "screen": "Accounting/Receivables" },
+    { "id": "close", "zone": "back", "kind": "secured", "area": [30, 2, 8, 8], "screen": "Accounting/PeriodClose",
       "door": { "at": [30, 0, 6], "turn": 0 } }
   ],
   "anchors": [ { "id": "entry", "at": [20, 0, 26] } ],
   "decorations": [
-    { "id": "overdue", "kind": "stack", "at": [10, 0, 4], "source": "accounting.summary",
+    { "id": "overdue", "zone": "back", "kind": "stack", "at": [10, 0, 4], "source": "accounting.summary",
       "value": "receivablesOverdue", "steps": [1, 5, 20], "screen": "Accounting/Receivables" }
   ],
-  "rooms": [ { "id": "front", "area": [2, 20, 6, 6], "room": "accounting-front" } ]
+  "rooms": [ { "id": "meet", "zone": "front", "area": [2, 20, 6, 6], "room": "accounting-front" } ]
 }
 ```
 
 - **Units are meters on a grid**, so pieces from modular kits snap together and the walk grid falls out of the
   layout: a cell is walkable unless a piece or a wall covers it.
-- **`screen` is a path under the apps root**, never a component location or a URL from elsewhere.
+- **Zones** divide an interior into its front office and back office. A back zone names the app's root screen,
+  its door and the runs of wall that are privacy glass. Every place, decoration and room belongs to a zone.
+- **Enclosures.** A zone, a secured place and a meeting room are enclosures: walled, entered only by a door, and
+  each its own sound space ([§14.2](#142-distance-audio)). The exterior is the one open space.
+- **A door is a portal.** It has a spot on each side and is never drawn open. Using it moves the figure from one
+  spot to the other ([§12](#12-movement-camera-and-physics)).
+- **`screen` is a path under the apps root**, never a component location or a URL from elsewhere. **`public`** is
+  the name of a PASS app (`billing`, `support`), resolved to the site's own path for it.
 - **`source` is a name from the source registry** ([§10](#10-functional-decorations)); a layout never names a
   service, an entity or a query.
 - **The exterior** is one document of kind `exterior` with terrain heights, buildings as places whose doors lead
@@ -277,15 +298,17 @@ A space is one JSON document in `world/`, owned by the component as code is. The
 
 ### 8.2 Validation
 
-A layout that is wrong should fail a spec, not surprise someone in the world. `three.world.LayoutServices.check#Layouts`
-(*proposed*) verifies for every document: each piece exists in its kit's index; each `screen` resolves to a screen;
-each `source` is registered and each `value` is one the source declares; every place and anchor is reachable on the
-walk grid from the entry; areas do not overlap; identifiers are unique. One bad document is reported by name and
-the others still load.
+A layout that is wrong should fail a spec, not surprise someone in the world.
+`ironstone.three.LayoutServices.check#Layouts` (*proposed*) verifies for every document: each piece exists in its
+kit's index; each `screen` resolves to a screen and each `public` to a PASS app; every item's zone exists and
+contains it; each `source` is registered and each `value` is one the source declares; every place and anchor is
+reachable on the walk grid from the entry; areas do not overlap; identifiers are unique. One bad document is
+reported by name and the others still load.
 
 ### 8.3 Installation state
 
-Layouts are code. What an installation changes is little, and lives in entities (*proposed*, package `three.world`):
+Layouts are code. What an installation changes is little, and lives in entities (*proposed*, package
+`ironstone.three`):
 
 | Entity | Holds |
 | --- | --- |
@@ -298,39 +321,91 @@ it comes, edited documents are stored as resources with revisions and validated 
 
 ## 9. Authorization and locked doors
 
-- **The door manifest.** `three.world.WorldServices.get#Doors` (*proposed*) takes a space and returns, for each
-  door and place with a `screen`, one of `open`, `locked` or `absent`. It asks
+Three layers, each the answer of a check that exists or is ordinary security data:
+
+| Layer | Opens | Decided by |
+| --- | --- | --- |
+| The world grant | The exterior, every front office, the general meeting rooms | Membership of the world's user group |
+| An app's authorization | That building's back office | The app root screen's own artifact authorization, as in the 2D apps |
+| A section's authorization | A secured area inside a back office | The section screen's authorization or permission |
+
+### 9.1 The world grant
+
+- **A user group of its own**, `THREE_WORLD_USERS` (*proposed*), with an artifact group `THREE_WORLD` over the
+  village screen and the world's services. Nobody is in it by default except administrators. An administrator
+  adds people in System › Access (Groups), the same screens that manage every other group.
+- **Internal and external users alike.** A member of staff needs the grant to enter. So does a PASS public
+  account (a customer, a supplier contact, a community member), which otherwise holds only the all-users group.
+  The grant is a framework user group, not a PASS site role, because the world is not a site.
+- **It opens no app.** With only the grant a person can walk the exterior, enter front offices, use general
+  meeting rooms they are a member of, and see locked doors. Everything else needs what it needed before.
+- **Checked by the server**, on the village screen, on every world service, and on joining a presence room.
+
+### 9.2 Doors
+
+- **The door manifest.** `ironstone.three.WorldServices.get#Doors` (*proposed*) takes a space and returns, for each
+  zone, door and place with a `screen`, one of `open`, `locked` or `absent`. It asks
   `ec.artifactExecution.isPermitted` for the screen as the current user, the same question the menu asks. The
   client only draws the answer; a locked door is also refused by the server if someone forces it, because opening
-  it is a request for the real screen.
+  it is a request for the real screen. A place with a `public` app is `open` when the installation's PASS site
+  offers that app and `absent` otherwise.
 - **Why a new call.** `shellData` and `menuData` leave out what a user may not view, deliberately: they do not
   reveal which screens exist. The manifest reveals exactly the doors the layout declares and nothing else.
 - **What a lock reveals, and the setting for it.** A locked door tells a person that an app or a section exists.
-  For a suite's own apps that is no secret: the village is the product's app map. An installation that disagrees
-  sets `three_locked_doors` to `hide`, and a place the person may not open is drawn as plain wall (`absent`).
-  Doors inside a building are evaluated only for someone who may enter the building.
-- **Menu conditions.** Some sections are shown by an expression rather than by authorization
-  (`default-menu-include` with a permission check). A place for such a section names the same permission in its
+  The back-office door of a building is always drawn: the building itself already says the division exists. For
+  secured areas inside a back office, an installation that prefers silence sets `three_locked_doors` to `hide`,
+  and an area the person may not open is drawn as plain wall (`absent`). Doors inside a back office are evaluated
+  only for someone who may enter it.
+- **Menu conditions.** Some sections are shown by an expression rather than by authorization (a `menu-include`
+  with a permission check, as Sales' Settings has). A place for such a section names the same permission in its
   layout, and the manifest evaluates it; otherwise its door would open onto an empty screen.
-- **Interiors are spaces with a gate.** The server admits a presence connection to an interior only when the
-  door's screen is permitted, and returns that space's state only then ([§13](#13-presence)).
+
+### 9.3 Front office, back office and the glass
+
+The privacy window is a rule about data first and a material second. What a browser is not sent, it cannot show.
+
+| | Seen from the front office | Seen from the back office |
+| --- | --- | --- |
+| People in the back | Plain figures: a position, moving or still. No identity, figure style, name or status | In full |
+| People in the front | In full, under the identity rules of [§13](#13-presence) | In full, through a tinted pane |
+| Back-office decorations | The static piece as a plain shape. No level, color or text, because no state is sent | In full |
+| Back-office screens and signs | Nothing | In full |
+| Sound | None passes | None passes ([§14.2](#142-distance-audio)) |
+
+- **The server keeps the glass.** The presence relay sends a front-office member only veiled records for
+  back-office figures, and space state returns nothing for back-zone sources to someone not authorized for the
+  app. A modified browser sees shapes behind the glass and nothing more.
+- **The renderer draws it.** For a viewer in the front, the glass is a frosted pane and what is behind it is
+  drawn in one flat tone at reduced contrast. For a viewer in the back, it is a mostly clear pane with a visible
+  tint and pattern, so it reads as a privacy window from both sides. Which look is used follows the viewer's own
+  authorization, not where their camera is.
+- **"Things happening"** behind the glass are people and whatever moves on its own in the layout. Whether a
+  moving cart may be seen to move is a choice for [design-world](design-world.md), since motion that follows data
+  is a little of that data. An installation may set the glass opaque.
+- **A back office with no front** has no glass unless its layout gives it a lobby; its front door is the locked
+  one.
+
+### 9.4 What is secret and what is not
+
 - **Art is not secret; state is.** Kit files and layouts are static files, served to any signed-in user. They show
   a generic accounting office, not this company's accounts. Everything that reflects data comes from services
   that run as the person and apply their authorization, organization filters included.
+- **Front offices show a person their own business.** A front-office decoration ("your unpaid invoices") reads
+  the same Mantle services the PASS page reads, as the person, so it shows what that page would show them.
 - **Organization.** The world calls the same services the screens call, after the same
-  `mantle.party.PartyServices.setup#UserOrganizationInfo`, so a person sees their organizations' state and no
-  other. Rooms for an organization are offered to its members ([§14](#14-audio-and-meetings)).
+  `mantle.party.PartyServices.setup#UserOrganizationInfo`, so a member of staff sees their organizations' state
+  and no other. Rooms for an organization are offered to its members ([§14](#14-audio-and-meetings)).
 
 ## 10. Functional decorations
 
-- **The source registry.** `service/three/world/Sources.js` (*proposed*) maps a source name to an existing service
+- **The source registry.** `service/ironstone/three/Sources.js` (*proposed*) maps a source name to an existing service
   and the values it exposes: `accounting.summary` to `ironstone.accounting.HomeServices.get#Summary`,
   `warehouse.home` to `ironstone.warehouse.HomeServices.get#Home`, `shell.counts` to
   `org.moqui.ui.ShellServices.get#ShellCounts`, `insights.attention` to
   `ironstone.insights.RegistryServices.get#Attention`, and one generic `dashboard.panel` over
   `org.moqui.report.ReportServices.render#Dashboard` for signs. Sources are code in the component; a browser
   never supplies a service name.
-- **One call per space.** `three.world.WorldServices.get#SpaceState` (*proposed*) runs each source the space uses
+- **One call per space.** `ironstone.three.WorldServices.get#SpaceState` (*proposed*) runs each source the space uses
   once, as the current user, and returns per source a state and its values:
 
   | State | Meaning | Drawn as |
@@ -344,6 +419,9 @@ it comes, edited documents are stored as resources with revisions and validated 
 
   These are the states BOSS's dashboard widgets already distinguish
   ([design-crosscut](../../mr-boss/plan/design-crosscut.md)). One failing source does not fail the call.
+- **State follows the zone.** A source used only by back-zone decorations is not run for someone who is not
+  authorized for the app, and nothing is returned for it, not even `withheld`: through the glass there is no
+  state to draw ([§9.3](#93-front-office-back-office-and-the-glass)).
 - **Mapping to a look** is in the layout: `steps` turn a number into a level (a stack of 0, 1, 2 or 3 crates), a
   status into a flag color, a time into a clock hand. Code-built pieces implement the kinds listed in
   [design-world §6](design-world.md#6-functional-decorations).
@@ -361,11 +439,16 @@ it comes, edited documents are stored as resources with revisions and validated 
 | Distance | What is shown | How |
 | --- | --- | --- |
 | Far | A summary: a number, a level, a status | Canvas-texture text and code-built pieces from space state |
-| Near | The object reacts: a book opens, a sign turns, a door swings | Animation, then the window |
+| Near | The object reacts: a book opens, a sign turns | Animation, then the window |
 | Open | The real screen | The page window of [§7.2](#72-how-it-sits-in-the-page), framed in the style of what was opened |
 
 - **One mechanism.** Books, signs, desks and doors all end in the page window at a real URL. They differ in the
   path they open and the frame around it.
+- **Front-office places open PASS pages.** PASS screens are server-rendered pages in the public site's own shell,
+  not screens of the `/qapps` client, so they cannot load into the page as a BOSS screen does. The window shows
+  them in a frame of the PASS page itself, with the same border. PASS pages refuse framing today
+  (`frame-ancestors 'none'`), so PASS must allow the village's own origin for them (N10). Until then a
+  front-office place opens the PASS page in a new tab.
 - **Game-like interactions** are few and explicit: ring the bell to open approvals, put a crate on the cart to
   start a receipt. Each is a transition on the village screen that calls the owning app's service, which makes
   its own permission checks. mr-three holds no business rule and bypasses none.
@@ -387,6 +470,10 @@ it comes, edited documents are stored as resources with revisions and validated 
   any navigation that changes the route ([§7.2](#72-how-it-sits-in-the-page)).
 - **Keys.** While the world has focus its keys are a `moqui.keymap` scope; with a window open the keys are the
   screen's, as they are today. Esc closes the window.
+- **Doors.** Walls and doors are always closed cells of the walk grid. A figure that reaches a door it may use
+  is moved to the door's far side with a short fade; the door itself does not animate open, so there is never an
+  open doorway to draw, see through or hear through. A path that crosses a door walks to it, passes, and walks
+  on. Entering a building from the exterior is the same act, with the interior loaded during the fade.
 - **Collision** is the walk grid: a figure cannot enter a blocked cell or a locked area. No physics library is
   needed for walking.
 - **Physics** (Rapier) is for the comical life of a space: props that are carried, stacked, dropped and knocked
@@ -402,11 +489,20 @@ Seeing other people needs each browser to send its position and receive the othe
   signaling, and a full queue closes the socket, which would drop a call. So presence needs a path of its own
   from the framework (N1): a socket a native component can register, with its own bounded queue that drops old
   frames instead of closing.
-- **Rooms.** A presence room is a space. The exterior is one room; each interior is one. A connection is admitted
-  to an interior only if the door's screen is permitted for the user ([§9](#9-authorization-and-locked-doors)).
+- **Rooms.** A presence room is a space. The exterior is one room; each interior is one. Joining any room needs
+  the world grant ([§9.1](#91-the-world-grant)).
+- **Two audiences in an interior.** Each member is in the front zone or the back zone, and the server admits a
+  position in the back zone only from someone authorized for the app. A member authorized for the app receives
+  everyone in full. Anyone else receives front-zone figures in full and back-zone figures veiled: a position and
+  a moving flag under an identifier that changes with each visit, at a lower rate, with no user, name, figure or
+  status ([§9.3](#93-front-office-back-office-and-the-glass)).
+- **Identity.** Staff appear to everyone under their display name. An external user appears to everyone as
+  "Visitor" unless they turn on `THREE_SHOW_NAME` (*proposed*), which shows the name registered on their account.
+  There is no other name to enter. The server writes the name into each record; a browser never supplies one, and
+  a private visitor's user is not in the records others receive.
 - **Who moves the figure.** The browser does, and reports; the server relays. The server sets the identity
-  (user, display name, avatar from the user's preference), limits speed, and refuses positions inside an area
-  whose door is locked for that user. Nothing of value depends on a position, so this is enough.
+  (user, display name, avatar from the user's preference), limits speed, and refuses positions inside a zone or
+  area whose door is locked for that user. Nothing of value depends on a position, so this is enough.
 - **Rates.** A moving browser sends up to 10 times a second and nothing while still, with a heartbeat every 5
   seconds. The server sends each member one snapshot of the room up to 10 times a second: a compact array per
   figure (id, x, z, heading, animation). Browsers interpolate between snapshots.
@@ -427,9 +523,10 @@ Seeing other people needs each browser to send its position and receive the othe
 - **A village meeting room is a chat room.** `WorldRoom` binds a room place to a `ChatRoom`; its meeting is that
   room's `CallSession`. Someone in Comms' Calls screen and someone who walked through the door are legs of the
   same call on the same media server. Who may enter is who may join that room's call today.
-- **Kinds of room.** General rooms are public chat rooms seeded by mr-three. A building's front room is a room
-  for that app's people. A room for an organization is offered to its members; binding it to the organization's
-  party record as a record room is the likely form (*unverified*).
+- **Kinds of room.** General rooms are chat rooms seeded by mr-three whose members are those with the world grant;
+  how a room open to "all users" treats external accounts today is *unverified*, so membership is explicit. A
+  building's front room is a room for that app's people. A room for an organization is offered to its members;
+  binding it to the organization's party record as a record room is the likely form (*unverified*).
 - **Walking in** joins the call (`org.moqui.call.CallServices.join#Call`, or starts it when nobody is there).
   Starting a room's call today rings every member; a walk-in must not, which needs N4.
 - **Who is inside.** `get#Call` lists participants. Those with a figure in the room are shown where they stand;
@@ -441,8 +538,17 @@ Seeing other people needs each browser to send its position and receive the othe
 
 ### 14.2 Distance audio
 
-- **A space call.** Each space with ambient audio has one audio-only call. Joining it is a person's choice, off by
-  default; the microphone is a second choice. A figure shows whether its person is listening and speaking.
+- **Every enclosure is its own sound space, completely.** The exterior has one audio-only call. Each enclosure
+  (a front office, a back office, a secured area, a meeting room) has its own, joined only by those inside it and
+  so only by those allowed in. No audio is forwarded between calls, so nothing passes a wall, a door or the glass
+  in either direction and in either form below; there is no muffling or partial sound to compute. Passing a door
+  leaves one call and joins the next, which is also what the one-call-per-page rule requires.
+- **Calls exist only while used.** An enclosure's call starts when the first person there turns sound on and ends
+  when the last leaves, so empty rooms cost nothing against the media server's limit of calls per node.
+- **Inside an enclosure** distance shapes volume as it does outdoors, except in a meeting room, where everyone
+  hears everyone as in any meeting.
+- **A person's choice.** Listening is off by default and the microphone is a second choice. A figure shows whether
+  its person is listening and speaking.
 - **First form: in the browser.** The media server forwards every audio track in a call to every member. The
   browser plays each remote track through WebAudio instead of the plain audio element `m-call-audio` uses: a gain
   set from the distance between figures (full within 3 m, fading to silent at 15 m) and a stereo pan from the
@@ -500,14 +606,21 @@ Seeing other people needs each browser to send its position and receive the othe
 - **Phones.** Touch controls, the Low or Medium tier, the window as the full screen. The village is usable on a
   phone; long work in a screen is better outside world mode, and leaving it is one tap.
 - **Terminal and print.** The directory for the village; each viewer's text twin.
+- **External users.** A PASS public account with the world grant signs in at the village on a host that serves
+  `/qapps`, the static mount, the presence socket and call signaling. PASS hosts refuse framework routes, so an
+  installation that exposes only PASS hosts must also expose the village's, and a village at an edge node needs
+  presence and media there ([§21](#21-open)). What the `/qapps` shell shows a user whose only app is the village
+  (an empty tray, no palette sources) is *unverified* and is checked before any external grant is given.
 
 ## 17. Testing
 
 Under the two suites of [Build-Test](../../../../../docs/Build-Test.md):
 
-- **Regression specs** (server, fast): layout validation over every document; the door manifest for users with
-  and without access, and with `hide`; space state for each state of the table, including a source that fails
-  and one that is withheld; sign binding; room binding and who may enter. The pure parts of the engine (walk
+- **Regression specs** (server, fast): layout validation over every document; the world grant (a user without it,
+  internal or external, gets no village, service or presence room); the door manifest for users with and without
+  access, and with `hide`; the glass (a front-office user's space state has no back-zone values, and their presence
+  snapshot has only veiled records for the back); space state for each state of the table, including a source that
+  fails and one that is withheld; sign binding; room binding and who may enter. The pure parts of the engine (walk
   grid, path finding, level mapping, snapshot interpolation) are modules with no WebGL in them, tested as client
   specs without a renderer.
 - **Rendering.** The village screen is rendered once in `qvt` and once in `tui`, since it has its own templates,
@@ -534,6 +647,13 @@ Under the two suites of [Build-Test](../../../../../docs/Build-Test.md):
 | N8 | Positions and sizes for facility locations and placed assets | data model | A companion entity to `mantle.facility.FacilityLocation` in Mantle with position, size and rotation; the same for an asset's place in a facility | Racks, plant view, later editing | generated defaults from identifiers; edited values kept |
 | N9 | A 3D model as product content | seed data | A `ProductContent` type for a glTF model in Mantle | Product model viewer | upload, serve with the product's access rules |
 
+| N10 | PASS pages framed by the village | response policy (in mr-pass) | `frame-ancestors` of the village's origin in `mr-pass/screen/Shared/Headers.js`, for a signed-in user with the world grant | Front offices | a PASS page loads in the window for such a user and refuses every other framer |
+
+By the direction of November 17, 2026 the framework gains what THREE needs where the piece is small, and reusable
+where it can be: N1 (any add-on's live messages), N2 and N3 are general; N4 to N6 are small changes to calls that
+help Comms too. N8 and N9 are Mantle's and N10 is PASS's. The libraries, art, engine and presence relay stay in
+mr-three.
+
 N1 is the only one that blocks a phase outright (T4). The others have an interim: theme rows for N2, octet-stream
 for N3, polling for N6, generated racks for N8.
 
@@ -544,24 +664,32 @@ for N3, polling for N6, generated racks for N8.
 | T0 Foundation | `component.xml`, the static mount, vendored libraries with manifest and check, `moqui.three` with the shared renderer, `m-three-view` with the `box` preset, a gallery example | A box renders on the example screen; nothing 3D loads on other pages; the manifest spec passes |
 | T1 Village, alone | The kit pipeline with a first exterior kit, layout documents and validation, world mode over the shell, camera and movement, buildings as doors with the manifest, the directory and `tui` twin, quality tiers | A person walks or clicks to a building and its app opens in the window; a locked door stays shut; the budgets of [§5](#5-rendering-core) are measured and recorded |
 | T2 First viewers | Box type, product size, packing preview, generated warehouse racks, each injected with its text twin | Each shows on its host screen in BOSS and reads as text in `tui` |
-| T3 Interiors and decorations | The interior template, two or three interiors from design-world, the source registry and space state, code-built decorations, signs bound to dashboards | State changes in the apps show in the world within a minute; every state of [§10](#10-functional-decorations) has a look |
-| T4 People | N1, the presence relay, figures and their settings | Two browsers see each other move; an interior admits only the authorized |
-| T5 Sound | Meeting rooms on existing calls (N4, N6), then distance audio in its first form | A 2D participant and a walk-in hear each other; outdoors, volume follows distance |
+| T3 Interiors and decorations | The interior template with zones and the glass, two or three interiors from design-world, the source registry and space state, code-built decorations, signs bound to dashboards, front-office places opening PASS pages (in a new tab until N10) | State changes in the apps show in the world within a minute; every state of [§10](#10-functional-decorations) has a look; a user with only the world grant gets no back-zone state |
+| T4 People | N1, the presence relay with its two audiences, figures and their settings | Two browsers see each other move; from the front office a back-office figure is a veiled shape, and the back zone admits only the authorized |
+| T5 Sound | Meeting rooms on existing calls (N4, N6), then distance audio in its first form, a call per enclosure | A 2D participant and a walk-in hear each other; outdoors, volume follows distance; nothing is heard through the glass |
+| T6 External visitors | The identity rules for external users, N10, the check of what the shell shows them, the deployment notes for hosts | A PASS public account with the grant walks the exterior and a front office, opens its own PASS pages in the window, and learns nothing of another visitor or of a back office |
 | Later | Distance audio in the server (N5); the dome for events; Assist agents as villagers; props with physics; editing in the viewers (N8); the product model viewer and PASS; 3D for Maps; the assembly canvas; a world editor; scoring | Each is its own design |
 
-T2 depends only on T0 and can run beside T1. [design-world](design-world.md) must have the exterior plan before
+The world grant exists from T1 and is given only to internal users until T6. T2 depends only on T0 and can run
+beside T1. [design-world](design-world.md) must have the exterior plan before
 T1 ends and the first interiors before T3.
 
 ## 20. Decided
 
 | Decision | Notes |
 | --- | --- |
+| The suite is IronStone THREE (Three-d Hosted-Roleplay Enterprise Ensuite) in the `mr-three` component | Services and entities in `ironstone.three`, preferences and groups `THREE_*`, the static mount `threestatic`; "the village" is the world mode's everyday name |
+| Entering the shared world needs the world grant, for internal and external users, given in System | It opens the exterior and front offices and no app ([§9.1](#91-the-world-grant)) |
+| A building is a PASS front office open to the world and a BOSS back office behind a lock and privacy glass | The glass is enforced by what the server sends ([§9.3](#93-front-office-back-office-and-the-glass)) |
+| The framework gains small, reusable pieces as needed; libraries, art and anything bulky stay in mr-three | [§18](#18-framework-and-data-needs) |
+| An external user is "Visitor" or their registered real name, by their own choice; nothing else | Decided November 17, 2026 ([§13](#13-presence)) |
+| Enclosed spaces are separate sound spaces, and doors are portals that never open | No sound or sight through a doorway; one call per enclosure ([§12](#12-movement-camera-and-physics), [§14.2](#142-distance-audio)) |
 | The village is a shell layer with the page as a window | Not a screen and not a render mode; real URLs and the whole shell keep working ([§7](#7-the-village-as-a-shell-layer)) |
 | A working screen is always flat and framed | No DOM in 3D perspective ([§11](#11-screens-in-the-world)) |
 | WebGL2 with three.js; one context per page | WebGPU revisited after T1 |
 | Libraries are vendored in mr-three with their own manifest | An installation without mr-three ships none of them |
 | Layouts are code in the component; installation state is two small entities and preferences | A world editor is later |
-| Locks come from the screen's own authorization through one manifest call | Installations may hide instead of lock |
+| Locks come from the screen's own authorization through one manifest call | Installations may hide secured areas instead of locking them |
 | Decorations read existing services through a registry, as the viewing user | No new business queries in mr-three |
 | Walking uses the walk grid; physics is for props and loads only where they are | Keeps the first download small |
 | Meeting rooms are chat rooms and their calls | One meeting for 2D and 3D participants |
@@ -574,10 +702,12 @@ T1 ends and the first interiors before T3.
 | Question | Recommendation |
 | --- | --- |
 | How mr-three's own engine code is delivered | Plain ES modules under `threestatic/js/`, loaded by dynamic import with relative imports, revalidated by ETag in development; a release bundle made by the same tool that vendors the libraries, checked against its sources by a spec. No build step while developing |
-| N1 as a general hook or a fixed family | A general hook for native components: Maps tracking and other add-ons will want the same, and it keeps mr-three out of `moqui-host` |
+| N1 as a general hook or a fixed family | A general hook for native components: it is the reusable kind, Maps tracking and other add-ons will want the same, and it keeps mr-three out of `moqui-host` |
 | Who owns location positions and sizes (N8) | Mantle, as optional data: picking routes and capacity checks can use them too, and Mantle already owns the location |
 | Presence between cluster nodes on the `notify` transport | Two snapshots a second across nodes, ten within a node; revisit if a village spans nodes in practice |
-| Package and artifact names (`three.world`, `THREE_*`, `threestatic`) | Keep until the product name is chosen ([concept §11](concept.md#11-open)), then rename once |
+| How external users reach the village | On the installation's main host at first, signing in with their PASS account; a village served at an edge node or under a PASS host is a later design |
+| A PASS page in the window, or in a new tab | In the window, framed, once N10 allows it; a new tab until then and wherever a site's policy forbids framing |
+| Which PASS site the front offices use | One site named by an installation setting ([design-world §11](design-world.md#11-open)) |
 | The product viewer on PASS pages | After the BOSS viewer: served by PASS from the site's own assets, core bundle only, with PASS's policy unchanged if possible |
 | Whether world mode restyles the header or replaces it | Restyle only: the header is where the palette, tray, Assist and account live, and replacing it would fork the shell |
 | Order of T1 and T2 | T1 first for the fun of it, T2 beside it when someone wants a break from the village |

@@ -1,6 +1,7 @@
-# mr-three — Concept
+# IronStone THREE — Concept
 
-November 17, 2026 — concept draft; nothing built. This states what mr-three is for and what it should feel like.
+November 17, 2026 — concept draft; nothing built. This states what IronStone THREE (the `mr-three` component) is for
+and what it should feel like.
 The world layout is [design-world.md](design-world.md) (a skeleton for a later pass) and the engineering is
 [design-technical.md](design-technical.md).
 
@@ -14,9 +15,12 @@ Sections: [1 purpose](#1-purpose) · [2 serious 3D](#2-serious-3d-in-the-busines
 
 ## 1. Purpose
 
-mr-three brings 3D to MR Moqui with three.js and the libraries around it, physics included. It is an add-on
-component that depends on the apps it decorates and injects itself into them (screen extensions and the shell's
-plugin points), so BOSS, PASS and the framework apps gain 3D without depending on it.
+**IronStone THREE (Three-d Hosted-Roleplay Enterprise Ensuite)** brings 3D to MR Moqui with three.js and the
+libraries around it, physics included. It sits beside IronStone BOSS, PASS and HOME as the `mr-three` component: an
+add-on that depends on the apps it decorates and injects itself into them (screen extensions and the shell's plugin
+points), so BOSS, PASS and the framework apps gain 3D without depending on it. The JavaScript libraries, the art
+and anything else bulky live in mr-three; the framework gains only the small, mostly reusable pieces THREE needs
+from it.
 
 It has two sides that share one foundation:
 
@@ -58,10 +62,12 @@ game to use. It does not try to turn ERP work into a game with cheap scores and 
 probably come later, and when it does it follows the caution IronStone HOME already states about leaderboards,
 penalties and streaks. The central point is the game-like UI, not the points.
 
-Each application in BOSS and PASS is more or less a business division that could be a small business of its own, so
-each is a building. Someone who wants to make something goes to the factory. Someone who wants to fix something goes
-to the maintenance shed. There is a little accounting office with all the old-style, stereotypical accounting
-decoration. And so on, for every app.
+Each application is more or less a business division that could be a small business of its own, so each is a
+building. Someone who wants to make something goes to the factory. Someone who wants to fix something goes to the
+maintenance shed. There is a little accounting office with all the old-style, stereotypical accounting decoration.
+And so on, for every app. Many BOSS "back office" apps have "front office" features in PASS (a customer's invoices,
+a supplier's orders, a support desk), and the village shows that literally: the front office is the front of the
+same building ([§5](#5-the-world)).
 
 **Why medieval.** Business systems are intimidating, and a modern or science-fiction setting would make them more
 so. A low-tech village shows that even complex modern business ideas fit in a world anyone understands: a ledger is
@@ -96,10 +102,20 @@ easy to fit into is the goal.
 - **Terrain.** Minor variations for variety and a sense of place. On one side a large terrain feature that cannot be
   walked on, for decoration and for more room to hold functional decorations of the global kind (the Commons app is
   the first candidate).
-- **Buildings.** One per application. The outside says what the division does; the door is the way into the app.
-- **Interiors.** Each building's interior is a separate space, open only to people authorized for that app. To keep
-  things simple an interior has a large open center, with the parts of the application laid out around it. Secured
-  areas have doors, and a person without the authorization sees them clearly locked.
+- **Buildings.** One per division. The outside says what the division does; the door is the way in.
+- **Front office and back office.** Inside a building whose division has public-facing functions, the first room is
+  the front office: open to everyone in the world, holding what PASS offers the public for that division. Behind it
+  is the back office, the BOSS app, locked to all but those authorized for it. A building with no public-facing
+  functions has only a back office, and its front door is the locked one.
+- **Privacy glass.** Between the two is a privacy window. From the front, a person sees that people are moving
+  about and that things are happening in the back, and no details: no faces or names, no numbers, nothing readable.
+  From the back it is mostly transparent, so staff see the front office easily, and it still plainly looks like a
+  privacy window, so they know they are seen only as shapes.
+- **Interiors.** Each interior is a separate space. To keep things simple the back office has a large open center
+  with the parts of the application laid out around it. Secured areas have doors, and a person without the
+  authorization sees them clearly locked.
+- **Doors never open.** A door to an enclosed space is passed through, not swung: a person who may enter steps up
+  to it and is on the other side. There is never an open doorway, so nothing is seen or heard through one.
 - **Meeting rooms.** Spread around the village and reachable from the front of each building: general ones, and
   ones plainly meant for a particular organization.
 - **A high third-person view.** The world is 3D, seen from above and behind, suited to walking around a village.
@@ -118,8 +134,16 @@ app: what is simple enough to surface in the world is surfaced there, and the re
 
 ## 7. People, sound and meetings
 
+- **Who is there.** Entering the shared world takes a grant of its own, given by an administrator in the System
+  app. It applies to internal and external users alike: a member of staff without it uses the apps as before, and a
+  customer, supplier or community member with it can walk the village and its front offices. Being in the world
+  opens no app; each back office still needs its own authorization.
 - **Avatars.** People in the village see each other walking about.
+- **Names.** Staff appear under their names. An external user is "Visitor" unless they choose to show the real
+  name registered with their account. Those are the only two choices: private or real, with no made-up names.
 - **Distance audio.** Outdoors, people hear those near them, louder when closer.
+- **Enclosed spaces are separate for sound, completely.** A front office, a back office, a secured area and a
+  meeting room each have their own sound. Nothing passes a wall, a door or the privacy glass, in either direction.
 - **Private audio in meeting rooms.** The village's meeting rooms are the system's existing meeting rooms on the
   same backplane, so someone who joined from the 2D meeting screen and someone who walked in are in one meeting.
 - **Helpers.** Assist agents already have identities in chat. They could later be villagers one can walk up to.
@@ -155,15 +179,14 @@ generic and familiar.
 
 Suggested order, detailed in [design-technical §19](design-technical.md#19-phases): the shared foundation; the
 village's exterior for one person, with buildings as doors into the apps; the first inline viewers; interiors and
-functional decorations; other people; meetings, then distance audio; and after those the dome events, helpers,
-editing and any scoring.
+functional decorations, with front offices and the privacy glass; other people; meetings, then distance audio;
+external visitors; and after those the dome events, helpers, editing and any scoring.
 
 ## 11. Open
 
 | Question | Recommendation |
 | --- | --- |
-| What the village mode and the component are called beside BOSS, PASS and HOME | Decide before anything user-visible is built; the documents say "the village" until then |
-| Who is in the world | Internal users first (those with BOSS access). PASS's public users get their own quarter and rules later, if at all; a public visitor never shares a space with staff by default |
+| Whether staff see who a private "Visitor" is | No: in the world a private visitor is "Visitor" to everyone. Staff learn who someone is from the business they do (a case, an invoice, a meeting they join), as they do in PASS |
 | One village per installation, or one per organization | One per installation, with organization shown by the rooms and banners a person sees; the active organization scopes data as it does in the apps |
 | How much of System, Tools and Dev AIDE | A building each with signs and books at first; game-like interactions only where one is obviously simple (a failed job to retry, a service to restart) |
 | Scoring | Later, opt-in, and never by default for a person's individual activity |
