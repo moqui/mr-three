@@ -152,7 +152,7 @@ app: what is simple enough to surface in the world is surfaced there, and the re
   meeting room each have their own sound. Nothing passes a wall, a door or the privacy glass, in either direction.
 - **Private audio in meeting rooms.** The village's meeting rooms are the system's existing meeting rooms on the
   same backplane, so someone who joined from the 2D meeting screen and someone who walked in are in one meeting.
-- **The speaking furniture.** The village NPCs are specialized Assist agents. A brass swallow gives directions at the gate, a tally stick answers receiving questions, an intelligent book helps a customer at Billing, a proof stamp reads changes, and a survey mirror explains Insights. Each station has a curated `AGENT.md`, an Ask action and a directory equivalent. The conversation uses the viewer’s access and stays private. [The cast](design-world-agents.md)
+- **The speaking furniture.** The village NPCs are specialized Assist agents. A brass swallow gives directions at the gate, a rooted tree at the Forum steps helps a reader join a discussion, an intelligent book helps a customer at Billing, a small stone figure at the Help counter helps a visitor choose where to start, a tally stick answers receiving questions, a proof stamp reads changes, and a survey mirror explains Insights. Each station has a curated `AGENT.md`, an Ask action and a directory equivalent. The conversation uses the viewer’s access and stays private. [The cast](design-world-agents.md)
 
 ## 8. Reference games
 
