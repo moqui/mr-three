@@ -6,6 +6,13 @@ Stand just inside the south gate. Straight ahead, the clock face is a pale disc 
 
 *Arrival study.* The painting sets the silhouette, warmth and order in which the eye finds things. The overhead plate sets walking distances and door locations. Frame the same composition at the game camera’s default 50-degree pitch, with adjustable zoom. Keep the foreground street clear even when the square is busy.
 
+Two studies revisit the same arrival. Follow Market Street from the gate to the square in each. The play view brings the mill closer to the receiving barn to keep both in frame. Use the numbered plan for the length of that walk.
+
+| [South-gate painting](millrace-arrival-painting.jpg) | [Game-camera study](millrace-arrival-play-view.jpg) |
+| --- | --- |
+| ![Late-morning light on the counting house, market arcade and receiving hoist.](millrace-arrival-painting.jpg) | ![Elevated view along Market Street, with the Forum steps on the left and gardens on the right.](millrace-arrival-play-view.jpg) |
+| The coin over the counting-house door, the Forum reading desk and the empty sling give someone on foot places to meet. | The plain pack uses roof shapes, the works arch and the paving inlays to make the way to the square visible from above. |
+
 Millrace is a proposed working town for the BOSS divisions, their PASS counters and the framework apps. This atlas supplies the exterior for T1, three furnished interiors for T3, and the building sheets for the rest. The [concept](concept.md) covers the purpose and the [technical design](design-technical.md) owns rendering, services and deployment. The [building sheets](design-world-buildings.md), [first interiors and review walk](design-world-interiors.md), [Assist characters](design-world-agents.md) and [meeting venues](design-world-venues.md) are parts of this atlas.
 
 Millrace is one world among several, drawn by one theme pack among several, and built from mods as every later addition will be. Those three ideas are in the technical design: [worlds](design-technical.md#84-worlds), [theme packs](design-technical.md#16-theme-packs) and [mods](design-technical.md#17-mods).
@@ -185,7 +192,7 @@ A few personal things stay in the world. The **guide line** is a dotted ribbon f
 
 ## 5. The village NPCs
 
-A specialist lives where someone would naturally seek advice. At the gate a brass bird reads fingerposts. At the barn a notched tally stick counts a question off against its marks. Counterfoil is a little book tethered to the public cashier's desk with green ribbon. The Smithy's proof stamp strikes a mark when someone asks it to read a change. In the survey loft an angled mirror lets a manager turn a number over and see where it came from.
+A specialist lives where someone would naturally seek advice. At the gate a brass bird reads fingerposts. A reader at the Forum desk can find a face in the shade tree beside it. At the barn a notched tally stick counts a question off against its marks. Counterfoil is a little book tethered to the public cashier's desk with green ribbon. A mossy limestone figure shares the Mending Porch counter with the rack of patterns. The Smithy's proof stamp strikes a mark when someone asks it to read a change. In the survey loft an angled mirror lets a manager turn a number over and see where it came from.
 
 Each is an Assist agent with its own curated **AGENT.md**. The brief, the physical station and the directory entry identify the same specialist. Select **Ask** to address one privately. Motion signals the local interaction with Assist. The ordinary book, door or instrument next to the character still opens its screen directly. The cast is the first mod, so a component can add a specialist of its own the same way. See the [cast, instruction files and binding design](design-world-agents.md).
 

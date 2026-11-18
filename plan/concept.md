@@ -140,10 +140,10 @@ app: what is simple enough to surface in the world is surfaced there, and the re
 
 ## 7. People, sound and meetings
 
-- **Who is there.** Entering the shared world takes a grant of its own, given by an administrator in the System
+- **Who is there.** Entering the town takes a grant of its own, given by an administrator in the System
   app. It applies to internal and external users alike: a member of staff without it uses the apps as before, and a
   customer, supplier or community member with it can walk the village and its front offices. Being in the world
-  opens no app; each back office still needs its own authorization.
+  opens no app; each back office still needs its own authorization. A venue admits a signed-in user who may join its bound call.
 - **Avatars.** People in the village see each other walking about.
 - **Names.** Staff appear under their names. An external user is "Visitor" unless they choose to show the real
   name registered with their account. Those are the only two choices: private or real, with no made-up names.

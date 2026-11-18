@@ -1,6 +1,6 @@
 # IronStone THREE — Technical design
 
-November 17, 2026 — draft; nothing built. The `mr-three` component holds its README, license and these plans. This
+November 17, 2026 — draft; nothing built. The `mr-three` component holds its README, license, design studies and specialist briefs. This
 file decides how IronStone THREE is built on MR Moqui as it is today, and lists what the framework, Mantle and PASS
 must gain. The
 [concept](concept.md) is its fixed input; the [world design](design-world.md) decides what the spaces contain.
@@ -37,7 +37,7 @@ Sections: [1 decisions](#1-scope-and-decisions) · [2 foundations](#2-existing-f
   one instance per chat room ([§14.3](#143-venues)).
 - **A HUD over the world**, as ordinary page content under the shell header, with a minimap generated from the
   layout ([§7.5](#75-the-hud-and-the-minimap)).
-- **Entering the world takes its own grant**, given by an administrator in System, for internal and external
+- **Entering the town takes its own grant**, given by an administrator in System, for internal and external
   users alike. It opens the exterior and the front offices and no app ([§9](#9-authorization-and-locked-doors)).
 - **Front office, privacy glass, back office.** A building's front office holds the division's PASS functions and
   is open to everyone in the world; its back office is the BOSS app, behind a locked door and a privacy window
@@ -90,7 +90,8 @@ What is there to build on, and what each lacks for this use. Paths are from the 
 | `component.xml` | Depends on `mr-boss` (and through it Mantle). PASS is optional: its extensions load only when `mr-pass` is present |
 | `MoquiConf.xml` | Mounts `threestatic` under the root screen (anonymous view, as `devstatic`) and the `village` app under the apps screen with its own launcher entry |
 | `screen/village.xml`, `village.qvue`, `village.tui.json` | The village's app root, shown in the launcher as IronStone THREE: entry, the text directory, settings. Its artifact group is the world grant |
-| `screen/village/` | Settings, the administrator's screens for signs and rooms, and the transitions the world calls |
+| `screen/village/` | Settings, the administrator's screens for signs and rooms, and the transitions the town calls |
+| `screen/venue.xml` | Sibling screen for a meeting venue. Resolves the bound chat room and checks the signed-in user's right to join its call |
 | `screen/threestatic.xml`, `screen/threestatic/` | Static files: `libs/` (vendored libraries), `js/` (the engine's modules), `css/`; and the transition that sends a registered mod's `static/` files ([§17.1](#171-the-directory)) |
 | `screen-extend/` | The inline viewers injected into BOSS and framework screens; the AppList `uiModes` entry |
 | `service/ironstone/three/` | Services: the mod registry, doors, space state, signs, rooms, actions, theme and layout validation |
@@ -229,23 +230,24 @@ need a second implementation. So the world sits behind the shell, and the shell 
   the current app's menu only while a window is open.
 - **A screen is its URL.** Opening a door, a book or a sign calls the root's `setUrl` with the real path
   (`/qapps/Accounting/Receivables`). The page loads into the window exactly as it does without mr-three. Closing
-  the window goes back to `/qapps/village`, where the window is hidden and the world has the whole view.
+  the window restores the active world's route and focus. In town that is `/qapps/village`. In a venue it is
+  `/qapps/venue/<chatRoomId>` for the same call, including for someone who entered directly from a meeting link.
 - **So everything in the shell still works** in world mode: the palette, quick create, the tray (Today, Chat,
   Notifications), the Assist drawer and its screen context, floats, the live call window, the browser's back
   button, a link pasted to a colleague.
-- **Place follows route, both ways.** Walking to a door opens its screen; and when the route changes by any other
+- **In town, place follows route both ways.** Walking to a door opens its screen; and when the route changes by any other
   means (the palette, a notification, Assist following along), the avatar is moved to the place whose door or
   bay owns the longest matching path. The palette is therefore the fast travel.
 - **A reload** in world mode at an app URL shows the screen in its window at once and loads the world behind it
   afterward; world mode itself is remembered per tab.
-- **Phones:** below 600 px the window is the full screen with a "back to the village" bar; there are no floats
+- **Phones:** below 600 px the window is the full screen with a return bar labeled for the current town or venue; there are no floats
   at that width today either.
 
 ### 7.3 The village screen and the directory
 
 `/qapps/village` is an ordinary app root, titled IronStone THREE. Its artifact group is the world grant of
-[§9.1](#91-the-world-grant): without it a person has no launcher tile, no entry point and no world. The inline
-viewers do not depend on it.
+[§9.1](#91-the-world-grant). It gates the town entry, launcher tile and directory. The sibling venue screen
+checks the named call's admission and offers that meeting's directory. Inline viewers load on their host screens.
 
 - **In `qvt`** its `.qvue` starts world mode and shows nothing itself; where WebGL is missing it shows the
   directory.
@@ -434,8 +436,8 @@ A world is a set of spaces with one way in. It is declared by `world.json` besid
 
 - **The engine holds one world at a time.** Entering another disposes the scene and keeps the cached kits and
   libraries. `moqui.three.enter(worldId, instanceId)` replaces the argument-less form of [§5](#5-rendering-core).
-- **A world's URL.** `/qapps/village` is the town. `/qapps/village/venue/<chatRoomId>` is a venue instance.
-  Both are the village app, so the page window, the HUD and the directory work the same in each.
+- **A world's URL.** `/qapps/village` is the town. `/qapps/venue/<chatRoomId>` is a venue instance.
+  The two sibling screens share the page window, HUD and directory components. The active world supplies their data.
 - **Presence and sound are keyed by world instance and space**, so two meetings in the same venue template
   never see or hear each other.
 - **Themes.** A world lists the packs that fit it. A pack fits when it maps every piece and look the world's
@@ -458,14 +460,14 @@ Three layers, each the answer of a check that exists or is ordinary security dat
 ### 9.1 The world grant
 
 - **A user group of its own**, `THREE_WORLD_USERS` (*proposed*), with an artifact group `THREE_WORLD` over the
-  village screen and the world's services. Nobody is in it by default except administrators. An administrator
+  village screen and the town's services. Nobody is in it by default except administrators. An administrator
   adds people in System › Access (Groups), the same screens that manage every other group.
 - **Internal and external users alike.** A member of staff needs the grant to enter. So does a PASS public
   account (a customer, a supplier contact, a community member), which otherwise holds only the all-users group.
   The grant is a framework user group, not a PASS site role, because the world is not a site.
 - **It opens no app.** With only the grant a person can walk the exterior, enter front offices, use general
   meeting rooms they are a member of, and see locked doors. Everything else needs what it needed before.
-- **Checked by the server**, on the village screen, on every world service, and on joining a presence room.
+- **Checked by the server**, on the village screen, on town services and on joining town presence. The venue screen, venue services and venue presence check admission to the named call.
 
 ### 9.2 Doors
 
@@ -678,7 +680,7 @@ someone who has one app. So mr-three has services of its own for world state tha
 
 ### 11.1 Specialist stations and Assist
 
-A specialist's station is a place with a proposed `agentId` binding and a separate ordinary screen opener. The directory and the world resolve **Ask** through the same authorized place. Reuse Assist’s offered-agent list and new-conversation agent selection. A small shell hook must select an offered specialist and open the drawer with the authorized station context. A specialist is declared by a `cast/<name>/` directory in a mod: its `AGENT.md`, and a `station.json` naming its place, body piece and poses. Each definition points its `instructionsLocation` at that file, `component://mr-three/mod/cast/<name>/AGENT.md` for the five mr-three ships. A mod's `cast/` is never served to a browser. Read/navigation tools run as the viewer. Recheck zone and source grants when resuming away from the station. A PASS record needs a site-scoped read adapter or a link into the real page. Local speech poses reflect the viewer’s conversation only. [Cast, bindings and limitations](design-world-agents.md)
+A specialist's station is a place with a proposed `agentId` binding and a separate ordinary screen opener. The directory and the world resolve **Ask** through the same authorized place. Reuse Assist’s offered-agent list and new-conversation agent selection. A small shell hook must select an offered specialist and open the drawer with the authorized station context. The mod loader recognizes a specialist by a `station.json` directly inside a named child directory of the mod. It describes the place, body piece and poses. The role brief is the sibling `AGENT.md`. Each definition points its `instructionsLocation` at that file, `component://mr-three/mod/cast/<name>/AGENT.md` for the seven mr-three ships. Specialist files are server-side. Assist resolves the requester's Constitution for each new run and retains its snapshot through a pause. Read/navigation tools run as the viewer. Recheck zone and source grants when resuming away from the station. A PASS record needs a site-scoped read adapter or a link into the real page. Local speech poses reflect the viewer’s conversation only. [Cast, bindings and limitations](design-world-agents.md)
 
 ## 12. Movement, camera and physics
 
@@ -812,8 +814,8 @@ those without a figure have a plaque. [The atlas](design-world-venues.md) descri
   room travels to the venue. So does "Join in 3D", an `ext-action` mr-three adds to the call window and to a
   calendar event's join action through the shell's `meetings-source`.
 - **Admission is the call's.** Any signed-in user who may join the call may enter its venue; the world grant is
-  not asked, because a venue shows no app and no town. Its services check call membership where the town's
-  check the grant. A guest who joined by `CallLink` has no `/qapps` session and stays in the ordinary call
+  not asked, because a venue shows no app and no town. Its sibling screen, services and presence check the
+  named room's venue binding and call admission. A guest who joined by `CallLink` has no `/qapps` session and stays in the ordinary call
   page, shown in the venue as a plaque.
 - **Sound** is a meeting room's: everyone hears everyone. A venue is one enclosure.
 - **Screens.** A place of kind `screen` shows a video track of the call as a video texture: the first
@@ -938,7 +940,7 @@ mod/<modId>/
   patch/<space>.json  additions to another mod's space, in its slots
   room/<app>.json     station groupings for a generated room     (§17.3)
   theme/<themeId>/    a theme pack                               (§16)
-  cast/<name>/        AGENT.md and station.json                  (§11.1)
+  <specialist>/       AGENT.md and station.json                  (§11.1)
   walk/<walkId>.json  a guided walk: stops, sentences, places
   static/             all that a browser may fetch: js/, kits/, audio/, img/
 ```
@@ -954,8 +956,8 @@ mod/<modId>/
 - **Only `static/` reaches a browser.** A transition on `threestatic` sends
   `/threestatic/mod/<modId>/<path>?v=<hash>` from `component://<component>/mod/<modId>/static/<path>` with
   `ec.web.sendResourceResponse`, for a registered and enabled mod, a path with no `..`, and an extension on a
-  short list. Manifests, layouts and packs are read by services and returned as data. `cast/` is read only by
-  Assist. Immutable caching for these URLs is *unverified*; a component may instead mount its own static
+  short list. Manifests, layouts and packs are read by services and returned as data. The mod loader reads the station files on the server.
+  Assist reads each role brief through its definition. Immutable caching for these URLs is *unverified*; a component may instead mount its own static
   directory as `devstatic` is mounted.
 
 The manifest:
@@ -1084,7 +1086,7 @@ export default function (api) {
 | --- | --- |
 | `core` | The piece vocabulary, the seven marks and six states, the decoration kinds and their default renderers, the common fittings (approvals bell, room sign, blank slip, counter flag, notice board, map table), the meeting furniture, the HUD's standard slots |
 | `millrace` | The town: its exterior, the three furnished interiors, the room groupings for the rest, the packs `millrace` and `millrace-plain`, the sources and acts for the BOSS and framework apps |
-| `cast` | The five specialists |
+| `cast` | The seven specialists |
 | `venues` | The four meeting worlds and their packs |
 | `walks` | The four guided walks |
 | `lot-dev-aide`, `lot-gallery`, `lot-marble` | One building each, present with its component |
@@ -1112,18 +1114,19 @@ export default function (api) {
 Under the two suites of [Build-Test](../../../../../docs/Build-Test.md):
 
 - **Regression specs** (server, fast): layout validation over every document; the world grant (a user without it,
-  internal or external, gets no village, service or presence room); the door manifest for users with and without
+  internal or external, cannot enter the town, call its services or join its presence rooms); the door manifest for users with and without
   access, and with `hide`; the glass (a front-office user's space state has no back-zone values, and their presence
   snapshot has only veiled records for the back); space state for each state of the table, including a source that
   fails and one that is withheld; sign binding; room binding and who may enter. The pure parts of the engine (walk
   grid, path finding, level mapping, snapshot interpolation, the minimap's shapes from a layout) are modules with
   no WebGL in them, tested as client specs without a renderer.
 - **Mods, packs and worlds** (server, fast): the scan finds a mod in another component and leaves out one with a
-  bad manifest or a missing requirement, by name; only `static/` is served and a `cast/` or manifest path is
+  bad manifest or a missing requirement, by name; only `static/` is served and a specialist's role brief, station file or mod manifest is
   refused; a source or action not in an enabled mod's manifest cannot be called; a patch outside a slot is
   refused; lot assignment is stable; a generated room validates for an app with and without a grouping file;
   both packs validate, and the plain rules catch a look that differs by color alone; a venue admits a call
-  member without the world grant and refuses a non-member with it; the minimap's markers for a front-office
+  member without the world grant and refuses a non-member with it; closing a page in the meeting returns a
+  venue-only member to that same venue and leaves the town inaccessible; the minimap's markers for a front-office
   viewer hold nothing of the back zone.
 - **World-state services** (server, fast): for each, on the demo data, its count equals the row count of the
   list it names for the same user and scope; a user whose door is shuttered gets no entry for that building; a
@@ -1175,12 +1178,13 @@ N13.
 | T0 Foundation | `component.xml`, the static mount, vendored libraries with manifest and check, `moqui.three` with the shared renderer, `m-three-view` with the `box` preset, a gallery example | A box renders on the example screen; nothing 3D loads on other pages; the manifest spec passes |
 | T1 Village, alone | The mod scan with mr-three's own mods, the `millrace` world and both theme packs loaded through it, the kit pipeline with a first exterior kit, layout documents and validation, world mode over the shell, camera and movement, buildings as doors with the manifest and the three door looks, the first HUD (place line, generated minimap and full map with travel, action prompt, travel buttons), the directory and `tui` twin, quality tiers | A person walks or clicks to a building and its app opens in the window; a door that is not theirs stays shuttered; the town draws in both packs; the minimap matches the layout; the budgets of [§5](#5-rendering-core) are measured and recorded |
 | T2 First viewers | Box type, product size, packing preview, generated warehouse racks, each injected with its text twin | Each shows on its host screen in BOSS and reads as text in `tui` |
-| T3 Interiors and decorations | The interior template with zones, stations and the glass; the receiving barn, counting house and proof yard from the world atlas and a generated room for every other building; the source registry and space state; the decoration kinds; the world-state services and the street readings they supply; signs bound to dashboards; acts and blank slips; front-office places opening PASS pages in the window (N10); the HUD's scope pennant, work tracker, waypoint and satchel, and the room plan on the minimap; guided walks. All of it through mod API version 0 | State changes in the apps show in the world within a minute; every state of [§10](#10-functional-decorations) has a look in both packs; every building has a room; a user with only the world grant gets no back-zone state |
+| T3 Interiors and decorations | The interior template with zones, stations and the glass; the receiving barn, counting house and proof yard from the world atlas and a generated room for every other building; the source registry and space state; the decoration kinds; the world-state services and the street readings they supply; signs bound to dashboards; acts and blank slips; front-office places opening PASS pages in the window (N10); the HUD's scope pennant, work tracker, waypoint and satchel, and the room plan on the minimap; guided walks. All of it through mod API version 0 | State changes in the apps show in the world within a minute; every state of [§10](#10-functional-decorations) has a look in both packs; every building has a room; a user with only the world grant gets no back-zone state; an internal user with the grant can open a configured PASS counter in the window |
 | T4 People | N1 and N11, the presence relay with its two audiences, figures and their settings, people on the minimap, point, follow, knock and the counter flag | Two browsers see each other move; from the front office a back-office figure is a veiled shape and is absent from the minimap, and the back zone admits only the authorized |
 | T5 Sound and venues | Meeting rooms on existing calls (N4, N6), then distance audio in its first form, a call per enclosure; the HUD's sound panel; the four venues with their meeting furniture and big screens on the call's screen share | A 2D participant and a walk-in hear each other; outdoors, volume follows distance; nothing is heard through the glass; a shared screen shows on a venue's wall and opens flat; a call member without the world grant enters a venue and not the town |
-| T6 External visitors | The identity rules for external users, N10, the check of what the shell shows them, the deployment notes for hosts | A PASS public account with the grant walks the exterior and a front office, opens its own PASS pages in the window, and learns nothing of another visitor or of a back office |
-| T7 Mods opened | The mod interface frozen as version 1 and documented; the administrator's list of mods and theme settings; optional per-person mods; an example mod in the development component set that adds a building on a lot, a source, a decoration look and a walk | A component outside mr-three adds a building with a live reading and a specialist without any change to mr-three; turning its mod off removes them and nothing else |
-| Later | Distance audio in the server (N5); an audience role for large venues (N12); board walls on a canvas document (N13); specialist Assist station bindings and definitions over the curated role files ([§11.1](#111-specialist-stations-and-assist)); props with physics; editing in the viewers (N8); the product model viewer and PASS; 3D for Maps; the assembly canvas; a world editor that writes an installation mod; uploaded theme packs; scoring | Each is its own design |
+| T6 External visitors | The identity rules for external users, verification of T3's PASS framing with external accounts, the check of what the shell shows them, the deployment notes for hosts | A PASS public account with the grant walks the exterior and a front office, opens its own PASS pages in the window, and learns nothing of another visitor or of a back office |
+| T7 Mods opened | The mod interface frozen as version 1 and documented; the administrator's list of mods and theme settings; optional per-person mods; an example mod in the development component set that adds a building on a lot, a source, a decoration look, a walk and a specialist station | Enabling the mod installs the building and live reading along with the specialist's station, body, server-side brief and ordinary screen link. The screen opens from the room and directory. Disabling the mod withdraws its contributions, and the other mods still work |
+| Later · Assist binding | Bind the curated role files to Assist definitions and offer private **Ask** at each authorized station and in the directory ([§11.1](#111-specialist-stations-and-assist)) | A viewer receives a first private answer from the chosen specialist through either entry. A new run picks up an organization rule edit and a paused run keeps its snapshot ([binding checks](design-world-agents.md#assist-binding)) |
+| Later | Distance audio in the server (N5); an audience role for large venues (N12); board walls on a canvas document (N13); props with physics; editing in the viewers (N8); the product model viewer and PASS; 3D for Maps; the assembly canvas; a world editor that writes an installation mod; uploaded theme packs; scoring | Each is its own design |
 
 The world grant exists from T1 and is given only to internal users until T6. T2 depends only on T0 and can run
 beside T1. The specialists' bodies are placed with their rooms from the `cast` mod; their conversations wait for
@@ -1192,7 +1196,7 @@ T1 ends and the first interiors before T3.
 | Decision | Notes |
 | --- | --- |
 | The suite is IronStone THREE (Three-d Hosted-Roleplay Enterprise Ensuite) in the `mr-three` component | Services and entities in `ironstone.three`, preferences and groups `THREE_*`, the static mount `threestatic`; "the village" is the world mode's everyday name |
-| Entering the shared world needs the world grant, for internal and external users, given in System | It opens the exterior and front offices and no app ([§9.1](#91-the-world-grant)) |
+| Entering the town needs the world grant, for internal and external users, given in System | It opens the exterior and front offices and no app ([§9.1](#91-the-world-grant)) |
 | A building is a PASS front office open to the world and a BOSS back office behind a lock and privacy glass | The glass is enforced by what the server sends ([§9.3](#93-front-office-back-office-and-the-glass)) |
 | The framework gains small, reusable pieces as needed; libraries, art and anything bulky stay in mr-three | [§20](#20-framework-and-data-needs) |
 | An external user is "Visitor" or their registered real name, by their own choice; nothing else | Decided November 17, 2026 ([§13](#13-presence)) |
@@ -1214,7 +1218,7 @@ T1 ends and the first interiors before T3.
 | Rooms are stations in work order with one index cabinet, generated where not hand-made | Sized from their stations, larger than the house on the plan ([§17.3](#173-lots-slots-and-generated-rooms)) |
 | Street readings are per viewer | Each browser draws its own town; one street call and the shell's counts supply them ([§10.1](#101-world-state-services)) |
 | A street door is open or shuttered; a lock is drawn only inside | [§9.2](#92-doors) |
-| The specialists are Tallystick and Touchmark, with Brass Swallow, Counterfoil and Survey Glass | Renamed November 17, 2026 so no character repeats a neighbor's emblem |
+| The built-in cast has seven specialists at local stations | The [cast register](design-world-agents.md#the-cast) names each place, body and brief |
 | Door states come from the screen's own authorization through one manifest call | Installations may hide secured areas instead of locking them |
 | A room's decorations read its app's own Home service; the street and anything across apps read mr-three's own world-state services | Both through the registry, as the viewing user. The world-state services are counts over the database, each mirroring a named list in its app and checked against it, with no dependency on Insights. Direction of November 17, 2026, replacing "no new business queries in mr-three" ([§10.1](#101-world-state-services)) |
 | Walking uses the walk grid; physics is for props and loads only where they are | Keeps the first download small |

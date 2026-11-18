@@ -22,7 +22,7 @@ A venue is a mod like any other ([mods](design-technical.md#17-mods)). An instal
 ## Getting in
 
 - **From the town.** A meeting door whose room is bound to a venue takes the person there instead of into a building room. Leaving returns them to that door.
-- **From anywhere else.** “Join in 3D” on the call window and on a calendar event's join action. Someone who prefers the ordinary call screen joins there and is in the same meeting.
+- **From anywhere else.** “Join in 3D” on the call window or calendar event opens `/qapps/venue/<chatRoomId>` directly. Closing a framed page restores that same venue. Leaving the venue returns the person to the screen they came from. Someone who prefers the ordinary call screen joins there and is in the same meeting.
 - **Who may enter.** Anyone signed in who may join the room's call. A venue shows no app and no part of the town, so it does not need the town's grant. A guest who joined by link stays in the ordinary call screen and appears in the venue as a plaque, as every 2D participant does.
 - **How many.** A call holds 50 today, in 2D and 3D together, and has no listen-only role. The hall and the theatre hold that many until calls gain an audience. Seats beyond the figures present stay empty chairs.
 
