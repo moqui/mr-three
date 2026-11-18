@@ -8,8 +8,8 @@ The world atlas is [design-world.md](design-world.md) and the engineering is
 Sections: [1 purpose](#1-purpose) · [2 serious 3D](#2-serious-3d-in-the-business-apps) ·
 [3 the village](#3-the-village-what-it-is-and-is-not) · [4 principles](#4-design-principles) ·
 [5 the world](#5-the-world) · [6 screens](#6-screens-in-the-world) · [7 people](#7-people-sound-and-meetings) ·
-[8 references](#8-reference-games) · [9 not goals](#9-not-goals) · [10 documents and order](#10-documents-and-order) ·
-[11 open](#11-open)
+[8 references](#8-reference-games) · [9 not goals](#9-not-goals) · [10 themes, mods and worlds](#10-themes-mods-and-worlds) ·
+[11 documents and order](#11-documents-and-order) · [12 open](#12-open)
 
 ---
 
@@ -98,7 +98,7 @@ easy to fit into is the goal.
 ## 5. The world
 
 - **A dome.** The whole world sits inside a big dome, as in "Under the Dome" or "The Truman Show". It bounds what is
-  drawn at a distance and makes the sky simple. It can also be a huge screen for special events.
+  drawn at a distance and makes the sky simple. In a meeting venue it can also be a huge screen.
 - **Terrain.** Minor variations for variety and a sense of place. On one side a large terrain feature that cannot be
   walked on, for decoration and for more room to hold functional decorations of the global kind (the Commons app is
   the first candidate).
@@ -118,6 +118,12 @@ easy to fit into is the goal.
   to it and is on the other side. There is never an open doorway, so nothing is seen or heard through one.
 - **Meeting rooms.** Spread around the village and reachable from the front of each building: general ones, and
   ones plainly meant for a particular organization.
+- **More than one world.** The village is the main world. A small set of others are places to meet: a table
+  somewhere impossible for a few people, a hall or an open-air theatre for many. Each is an ordinary meeting with
+  a place around it, and a big screen showing the app the presenter is using. A shared whiteboard is intended
+  later, as another kind of wiki document.
+- **A heads-up display.** What belongs to the person rather than to a place (where they are, what waits for
+  them, a minimap, what they carry, their sound) sits over the world as it does in any game.
 - **A high third-person view.** The world is 3D, seen from above and behind, suited to walking around a village.
 
 ## 6. Screens in the world
@@ -146,7 +152,7 @@ app: what is simple enough to surface in the world is surfaced there, and the re
   meeting room each have their own sound. Nothing passes a wall, a door or the privacy glass, in either direction.
 - **Private audio in meeting rooms.** The village's meeting rooms are the system's existing meeting rooms on the
   same backplane, so someone who joined from the 2D meeting screen and someone who walked in are in one meeting.
-- **The speaking furniture.** The village NPCs are specialized Assist agents. A brass swallow gives directions at the gate, a measuring wheel answers receiving questions, an intelligent book helps a customer at Billing, a proof press reads changes, and a survey mirror explains Insights. Each station has a curated `AGENT.md`, an Ask action and a directory equivalent. The conversation uses the viewer’s access and stays private. [The cast](design-world-agents.md)
+- **The speaking furniture.** The village NPCs are specialized Assist agents. A brass swallow gives directions at the gate, a tally stick answers receiving questions, an intelligent book helps a customer at Billing, a proof stamp reads changes, and a survey mirror explains Insights. Each station has a curated `AGENT.md`, an Ask action and a directory equivalent. The conversation uses the viewer’s access and stays private. [The cast](design-world-agents.md)
 
 ## 8. Reference games
 
@@ -164,25 +170,39 @@ generic and familiar.
 ## 9. Not goals
 
 - A game engine, or a game with a win condition.
-- A general virtual world or user-built spaces.
+- A general virtual world, or spaces a person builds from inside the running world. An installation shapes its
+  own village another way, with mods and theme packs ([§10](#10-themes-mods-and-worlds)).
 - A replacement for the qvt UI. Every screen keeps working without mr-three, and the village leans on those screens.
 - Any business task that can only be done in 3D.
-- A modern or science-fiction theme.
+- A modern or science-fiction theme from mr-three itself. Theme packs make another look someone else's choice.
 - Photorealism, heavy textures or effects that need a discrete GPU.
 
-## 10. Documents and order
+## 10. Themes, mods and worlds
+
+Games and business applications share three needs, and THREE is designed for all three from the start.
+
+- **Themes.** How the world looks and sounds is a theme pack: data, with no code in it. There are two at first,
+  Millrace and a plain version of it with every texture removed. A company adjusts a pack's colors, banner and
+  names without touching its art.
+- **Mods.** The village is highly moddable. An add-on component contributes buildings for its own apps, live
+  decorations, characters, guided walks and acts through a `mod` directory, with the whole framework behind it:
+  services, entities, storage, scheduled jobs, scripts on the server and in the browser. Parts of the village
+  itself, the characters among them, are built as mods so the interface is one that is used.
+- **Worlds.** Millrace is the first world. Meeting venues are the next. Others can follow as mods.
+
+## 11. Documents and order
 
 | Document | Holds |
 | --- | --- |
-| [design-world.md](design-world.md) | The village plan, the building for each app, each interior, and the catalog of functional decorations. Millrace, its illustrated plan, building sheets, first interiors and Assist cast |
-| [design-technical.md](design-technical.md) | Libraries, rendering, how the village sits over the qvt shell, authorization, live state, presence, audio, assets, and what the framework must gain |
+| [design-world.md](design-world.md) | The village plan, the building for each app, each interior, the HUD and minimap, and the catalog of functional decorations. Millrace, its illustrated plan, building sheets, first interiors, Assist cast and meeting venues |
+| [design-technical.md](design-technical.md) | Libraries, rendering, how the village sits over the qvt shell, worlds, theme packs, mods, authorization, live state, presence, audio, assets, and what the framework must gain |
 
-Suggested order, detailed in [design-technical §19](design-technical.md#19-phases): the shared foundation; the
+Suggested order, detailed in [design-technical §21](design-technical.md#21-phases): the shared foundation; the
 village's exterior for one person, with buildings as doors into the apps; the first inline viewers; interiors and
-functional decorations, with front offices and the privacy glass; other people; meetings, then distance audio;
-external visitors. Specialist bodies can be placed with their rooms, with conversations once their Assist bindings are ready. Dome events, editing and any scoring come later.
+functional decorations, with front offices and the privacy glass; other people; meetings and venues, then distance audio;
+external visitors; mods opened to other components. Specialist bodies can be placed with their rooms, with conversations once their Assist bindings are ready. Editing and any scoring come later.
 
-## 11. Open
+## 12. Open
 
 | Question | Recommendation |
 | --- | --- |

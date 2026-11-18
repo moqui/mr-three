@@ -14,7 +14,7 @@ Inside the barn, its twin tells a warehouse worker how many receipts are waiting
 real Warehouse screen opens. A customer at the counting house sees their own invoices at the front counter.
 The staff ledger stays behind the privacy glass.
 
-Some of the furniture talks. **Proof Press**, the hand press at the Smithy, is an Assist specialist you can ask
+Some of the furniture talks. **Touchmark**, the proof stamp at the Smithy, is an Assist specialist you can ask
 about a change under review. It can tell you whether a check failed or whether one has yet to report.
 Walking is optional. The directory takes you straight to the same desks, screens and specialists.
 
@@ -27,6 +27,13 @@ Walking is optional. The directory takes you straight to the same desks, screens
 In ordinary BOSS and PASS screens, the same foundation will support previews you can turn in your hand.
 A packer could look inside a proposed shipping box before taping it shut. A buyer could see a product’s
 dimensions beside a familiar object. Editing comes later, and every task keeps a 2D route.
+
+## Themes, mods and other worlds
+
+How Millrace looks is a theme pack, and there is a plain one with no textures. What it contains comes from
+mods: an add-on component gives its own app a building, live decorations and a character through a `mod/`
+directory, and the town's own characters are built the same way in [mod/cast](mod/cast). Beyond the town are
+[venues](plan/design-world-venues.md), small worlds for a meeting, with a big screen for the app being shown.
 
 The project is in design. Start with the [concept](plan/concept.md), visit the [first three interiors and the
 review walk](plan/design-world-interiors.md), or read how rendering, permissions and shared spaces fit
